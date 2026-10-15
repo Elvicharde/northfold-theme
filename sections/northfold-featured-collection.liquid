@@ -1,0 +1,189 @@
+{% assign featured_collection = section.settings.collection %}
+{% if featured_collection == blank %}
+  {% assign featured_collection = collections['all'] %}
+{% endif %}
+
+{% assign flagship_product = section.settings.featured_product %}
+{% if flagship_product == blank and featured_collection != blank %}
+  {% assign matching_products = featured_collection.products | where: 'title', 'Everyday Stoneware Mug' %}
+  {% assign flagship_product = matching_products.first %}
+  {% if flagship_product == blank %}
+    {% assign flagship_product = featured_collection.products.first %}
+  {% endif %}
+{% endif %}
+
+<section class="northfold-featured full-width">
+  <div class="northfold-featured__intro">
+    <p class="northfold-featured__eyebrow">{{ 'sections.northfold_featured.eyebrow' | t | escape }}</p>
+    {% if featured_collection != blank and featured_collection.title != blank %}
+      <h2>{{ featured_collection.title | escape }}</h2>
+    {% else %}
+      <h2>{{ 'sections.northfold_featured.title' | t | escape }}</h2>
+    {% endif %}
+
+    {% if featured_collection != blank and featured_collection.description != blank %}
+      <p class="northfold-featured__description">{{ featured_collection.description | strip_html | truncatewords: 28 | escape }}</p>
+    {% else %}
+      <p class="northfold-featured__description">{{ 'sections.northfold_featured.description' | t | escape }}</p>
+    {% endif %}
+
+    {% if featured_collection != blank and featured_collection.products_count > 0 %}
+      <a class="northfold-featured__all-link" href="{{ featured_collection.url }}">
+        {{ 'sections.northfold_featured.view_collection' | t | escape }} <span aria-hidden="true">→</span>
+      </a>
+    {% elsif collections['all'].products_count > 0 %}
+      <a class="northfold-featured__all-link" href="{{ routes.all_products_collection_url }}">
+        {{ 'sections.northfold_featured.view_all' | t | escape }} <span aria-hidden="true">→</span>
+      </a>
+    {% endif %}
+  </div>
+
+  <div class="northfold-featured__products" role="list" aria-label="{{ 'sections.northfold_featured.products_label' | t | escape }}">
+    {% assign rendered_product_count = 0 %}
+    {% if flagship_product != blank %}
+      {% render 'northfold-product-card', product: flagship_product, sizes: '(min-width: 1200px) 17vw, (min-width: 750px) 22vw, 72vw' %}
+      {% assign rendered_product_count = 1 %}
+    {% endif %}
+
+    {% if featured_collection != blank %}
+      {% for product in featured_collection.products %}
+        {% if rendered_product_count < 4 %}
+          {% if flagship_product == blank %}
+            {% render 'northfold-product-card', product: product, sizes: '(min-width: 1200px) 17vw, (min-width: 750px) 22vw, 72vw' %}
+            {% assign rendered_product_count = rendered_product_count | plus: 1 %}
+          {% elsif product.id != flagship_product.id %}
+            {% render 'northfold-product-card', product: product, sizes: '(min-width: 1200px) 17vw, (min-width: 750px) 22vw, 72vw' %}
+            {% assign rendered_product_count = rendered_product_count | plus: 1 %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    {% if rendered_product_count == 0 %}
+      <p class="northfold-featured__empty" role="listitem">{{ 'sections.northfold_featured.no_products' | t | escape }}</p>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .northfold-featured {
+    display: grid;
+    grid-template-columns: minmax(14rem, 0.72fr) minmax(0, 2.28fr);
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: start;
+    padding: clamp(2.5rem, 5vw, 4.5rem) max(var(--page-margin), calc((100vw - var(--page-width)) / 2));
+    background: #faf8f3;
+    color: #292d22;
+  }
+
+  .northfold-featured__intro {
+    padding-block: 1.5rem;
+  }
+
+  .northfold-featured__eyebrow {
+    margin-block-end: 1rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .northfold-featured__intro h2 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(2rem, 3vw, 2.8rem);
+    font-weight: 400;
+    letter-spacing: -0.035em;
+    line-height: 1.1;
+  }
+
+  .northfold-featured__description {
+    margin-block-start: 1rem;
+    line-height: 1.6;
+  }
+
+  .northfold-featured__all-link {
+    display: inline-flex;
+    gap: 0.6rem;
+    margin-block-start: 2rem;
+    padding-block-end: 0.35rem;
+    border-block-end: 1px solid currentcolor;
+    text-decoration: none;
+  }
+
+  .northfold-featured__all-link:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 4px;
+  }
+
+  .northfold-featured__products {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(0.75rem, 1.6vw, 1.5rem);
+    min-width: 0;
+  }
+
+  .northfold-featured__empty {
+    grid-column: 1 / -1;
+    align-self: center;
+    padding-block: 2rem;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 999px) {
+    .northfold-featured {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1.5rem;
+    }
+
+    .northfold-featured__intro {
+      max-width: 42rem;
+      padding-block: 0;
+    }
+
+    .northfold-featured__products {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 749px) {
+    .northfold-featured {
+      padding-inline: 1.25rem;
+    }
+
+    .northfold-featured__products {
+      grid-auto-columns: minmax(72vw, 1fr);
+      grid-auto-flow: column;
+      grid-template-columns: none;
+      overflow-x: auto;
+      overscroll-behavior-inline: contain;
+      padding-block-end: 0.75rem;
+      scroll-snap-type: inline mandatory;
+    }
+
+    .northfold-featured__products > * {
+      scroll-snap-align: start;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.northfold_featured.name",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:sections.northfold_featured.settings.collection.label"
+    },
+    {
+      "type": "product",
+      "id": "featured_product",
+      "label": "t:sections.northfold_featured.settings.featured_product.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.northfold_featured.name"
+    }
+  ]
+}
+{% endschema %}

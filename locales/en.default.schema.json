@@ -88,6 +88,33 @@
       "settings": {
         "collection": {
           "label": "Collection link"
+        },
+        "featured_product": {
+          "label": "Flagship product"
+        },
+        "hero_image": {
+          "label": "Hero image"
+        }
+      }
+    },
+    "northfold_featured": {
+      "name": "Northfold collection",
+      "settings": {
+        "collection": {
+          "label": "Collection"
+        },
+        "featured_product": {
+          "label": "Flagship product"
+        }
+      }
+    },
+    "northfold_header": {
+      "settings": {
+        "announcement_primary": {
+          "label": "Announcement message"
+        },
+        "announcement_secondary": {
+          "label": "Secondary announcement"
         }
       }
     },

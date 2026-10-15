@@ -12,9 +12,14 @@
     "main": {
       "type": "hello-world",
       "settings": {}
+    },
+    "featured_collection": {
+      "type": "northfold-featured-collection",
+      "settings": {}
     }
   },
   "order": [
-    "main"
+    "main",
+    "featured_collection"
   ]
 }

@@ -1,0 +1,137 @@
+{% doc %}
+  Renders a linked Shopify product card with responsive imagery, price, and available native swatches.
+
+  @param {product} product - The Shopify product to render.
+  @param {string} [sizes] - The responsive image sizes value.
+
+  @example
+  {% render 'northfold-product-card', product: product %}
+{% enddoc %}
+
+{% assign swatch_option = blank %}
+{% for option in product.options_with_values %}
+  {% if swatch_option == blank %}
+    {% for option_value in option.values %}
+      {% if option_value.swatch.color != blank %}
+        {% assign swatch_option = option %}
+      {% elsif option_value.swatch.image != blank %}
+        {% assign swatch_option = option %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+
+<article class="northfold-product-card" role="listitem">
+  <a class="northfold-product-card__link" href="{{ product.url }}">
+    <div class="northfold-product-card__image">
+      {% if product.featured_image %}
+        {{ product.featured_image | image_url: width: 900 | image_tag: widths: '320, 480, 640, 800, 900', sizes: sizes | default: '(min-width: 1200px) 20vw, (min-width: 750px) 30vw, 72vw', alt: product.featured_image.alt | default: product.title, loading: 'lazy' }}
+      {% endif %}
+    </div>
+    <div class="northfold-product-card__details">
+      <h3>{{ product.title | escape }}</h3>
+      <p class="northfold-product-card__price">
+        {% if product.price_varies %}
+          {{ 'products.product.price_from' | t }} {{ product.price_min | money }}
+        {% else %}
+          {{ product.price | money }}
+        {% endif %}
+      </p>
+      {% if swatch_option != blank %}
+        <ul class="northfold-product-card__swatches" aria-label="{{ swatch_option.name | escape }}">
+          {% for option_value in swatch_option.values %}
+            {% if option_value.swatch.color != blank %}
+              <li>
+                <span class="northfold-product-card__swatch" role="img" aria-label="{{ option_value | escape }}" title="{{ option_value | escape }}" style="--swatch-color: {{ option_value.swatch.color }};"></span>
+              </li>
+            {% elsif option_value.swatch.image != blank %}
+              <li>
+                <span class="northfold-product-card__swatch northfold-product-card__swatch--image" role="img" aria-label="{{ option_value | escape }}" title="{{ option_value | escape }}" style="--swatch-image: url('{{ option_value.swatch.image | image_url: width: 64 }}');"></span>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+  </a>
+</article>
+
+{% stylesheet %}
+  .northfold-product-card {
+    min-width: 0;
+  }
+
+  .northfold-product-card__link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .northfold-product-card__image {
+    overflow: hidden;
+    aspect-ratio: 1;
+    background: #eee8de;
+  }
+
+  .northfold-product-card__image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 220ms ease;
+  }
+
+  .northfold-product-card__link:hover .northfold-product-card__image img {
+    transform: scale(1.025);
+  }
+
+  .northfold-product-card__link:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 4px;
+  }
+
+  .northfold-product-card__details {
+    padding-block-start: 0.75rem;
+  }
+
+  .northfold-product-card h3 {
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .northfold-product-card__price {
+    margin-block-start: 0.35rem;
+    font-size: 0.9rem;
+  }
+
+  .northfold-product-card__swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-block-start: 0.7rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .northfold-product-card__swatch {
+    display: block;
+    width: 1.2rem;
+    height: 1.2rem;
+    border: 1px solid rgb(41 45 34 / 24%);
+    border-radius: 50%;
+    background-color: var(--swatch-color, #eee8de);
+  }
+
+  .northfold-product-card__swatch--image {
+    background-image: var(--swatch-image);
+    background-position: center;
+    background-size: cover;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .northfold-product-card__image img {
+      transition: none;
+    }
+  }
+{% endstylesheet %}

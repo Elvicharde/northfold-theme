@@ -1,41 +1,96 @@
-{% comment %}
-  This section is used in the collection template to render collection page
-  listing all products within a collection.
+<section class="northfold-collection" aria-labelledby="NorthfoldCollectionTitle-{{ section.id }}">
+  <header class="northfold-collection__header">
+    <p class="northfold-collection__eyebrow">{{ 'sections.collection.eyebrow' | t | escape }}</p>
+    <h1 id="NorthfoldCollectionTitle-{{ section.id }}">{{ collection.title | escape }}</h1>
+    {% if collection.description != blank %}
+      <div class="northfold-collection__description">{{ collection.description }}</div>
+    {% endif %}
+  </header>
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
-{% endcomment %}
-
-<h1>{{ collection.title }}</h1>
-
-<div class="collection-products">
   {% paginate collection.products by 20 %}
-    {% for product in collection.products %}
-      <div class="collection-product">
-        {% if product.featured_image %}
-          {% render 'image',
-            class: 'collection-product__image',
-            image: product.featured_image,
-            url: product.url,
-            width: 400,
-            height: 400,
-            crop: 'center'
-          %}
-        {% endif %}
-        <div class="collection-product__content">
-          <p>{{ product.title | escape | link_to: product.url }}</p>
-          <p>{{ product.price | money }}</p>
-        </div>
-      </div>
-    {% endfor %}
-
-    {{ paginate | default_pagination }}
+    <div class="northfold-collection__products" role="list" aria-label="{{ 'sections.collection.products_label' | t | escape }}">
+      {% for product in collection.products %}
+        {% render 'northfold-product-card', product: product, sizes: '(min-width: 1200px) 23vw, (min-width: 750px) 30vw, 45vw' %}
+      {% else %}
+        <p class="northfold-collection__empty" role="listitem">{{ 'sections.collection.no_products' | t | escape }}</p>
+      {% endfor %}
+    </div>
+    {% if paginate.pages > 1 %}
+      <nav class="northfold-collection__pagination" aria-label="{{ 'general.pagination.label' | t | escape }}">
+        {{ paginate | default_pagination }}
+      </nav>
+    {% endif %}
   {% endpaginate %}
-</div>
+</section>
 
 {% stylesheet %}
-  .collection-products {
+  .northfold-collection {
+    padding-block: clamp(2.5rem, 5vw, 4.5rem) clamp(4rem, 7vw, 6rem);
+    color: #292d22;
+  }
+
+  .northfold-collection__header {
+    max-width: 52rem;
+    margin: 0 auto clamp(2rem, 4vw, 3.25rem);
+    padding-inline: var(--page-margin);
+    text-align: center;
+  }
+
+  .northfold-collection__eyebrow {
+    margin-block-end: 0.85rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .northfold-collection__header h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+  }
+
+  .northfold-collection__description {
+    max-width: 42rem;
+    margin: 1rem auto 0;
+    line-height: 1.65;
+  }
+
+  .northfold-collection__products {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(1rem, 2vw, 1.75rem);
+  }
+
+  .northfold-collection__empty {
+    grid-column: 1 / -1;
+    padding-block: 4rem;
+    text-align: center;
+  }
+
+  .northfold-collection__pagination {
+    display: flex;
+    justify-content: center;
+    margin-block-start: 3rem;
+  }
+
+  @media (max-width: 999px) {
+    .northfold-collection__products {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.25rem;
+    }
+  }
+
+  @media (max-width: 749px) {
+    .northfold-collection {
+      padding-inline: 1.25rem;
+    }
+
+    .northfold-collection__products {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem 0.75rem;
+    }
   }
 {% endstylesheet %}
 

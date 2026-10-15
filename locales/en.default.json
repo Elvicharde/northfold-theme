@@ -8,6 +8,13 @@
  * ------------------------------------------------------------
  */
 {
+  "general": {
+    "pagination": {
+      "label": "Pagination",
+      "previous": "Previous",
+      "next": "Next"
+    }
+  },
   "404": {
     "title": "404",
     "not_found": "Page not found.",
@@ -58,6 +65,7 @@
       "view_image": "View image {{ index }}: {{ alt }}",
       "options_error": "Unable to update options. Refresh the page and try again.",
       "price": "Price",
+      "price_from": "From",
       "quantity": "Quantity",
       "sold_out": "Sold out",
       "updating_options": "Updating product options."
@@ -65,12 +73,37 @@
   },
   "sections": {
     "northfold_home": {
-      "eyebrow": "Northfold Stoneware",
-      "title": "Stoneware for everyday rituals",
-      "description": "Thoughtful ceramic pieces for the table, the kitchen, and the quiet moments in between.",
-      "shop_collection": "Explore the collection",
+      "eyebrow": "Timeless stoneware",
+      "title": "Everyday pieces for a warmer home",
+      "description": "Thoughtfully designed stoneware for daily rituals, shared meals and intentional living.",
+      "shop_collection": "Shop the collection",
       "shop_all": "Shop all pieces",
       "no_products": "Our collection is taking shape. Please check back soon."
+    },
+    "northfold_featured": {
+      "eyebrow": "Featured collection",
+      "title": "Stoneware for everyday rituals",
+      "description": "Everyday pieces designed to be used, loved, and shared.",
+      "view_collection": "View the collection",
+      "view_all": "Shop all pieces",
+      "products_label": "Featured products",
+      "no_products": "There are no products to feature yet."
+    },
+    "collection": {
+      "eyebrow": "Collection",
+      "products_label": "Products",
+      "no_products": "There are no products in this collection yet."
+    },
+    "northfold_header": {
+      "home": "Home",
+      "shop": "Shop",
+      "collections": "Collections",
+      "home_link": "{{ shop_name }} home",
+      "primary_navigation": "Primary navigation",
+      "open_menu": "Open navigation menu",
+      "search": "Search",
+      "account": "Account",
+      "cart": "Cart, {{ count }} items"
     }
   },
   "search": {
