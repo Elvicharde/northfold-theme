@@ -51,6 +51,17 @@
     "password": "Password",
     "enter": "Enter"
   },
+  "products": {
+    "product": {
+      "add_to_cart": "Add to cart",
+      "gallery": "Product images",
+      "options_error": "Unable to update options. Refresh the page and try again.",
+      "price": "Price",
+      "quantity": "Quantity",
+      "sold_out": "Sold out",
+      "updating_options": "Updating product options."
+    }
+  },
   "search": {
     "title": "Search",
     "placeholder": "Search articles, pages, or products",

@@ -80,6 +80,35 @@
       "title": "Title",
       "subtitle": "Subtitle",
       "normal": "Normal text"
-    },
+    }
+  },
+  "sections": {
+    "northfold_product": {
+      "name": "Northfold product",
+      "settings": {
+        "benefits_heading": {
+          "label": "Benefits heading"
+        },
+        "background_color": {
+          "label": "Background colour"
+        },
+        "show_quantity": {
+          "label": "Show quantity input"
+        }
+      },
+      "blocks": {
+        "benefit": {
+          "name": "Benefit",
+          "settings": {
+            "title": {
+              "label": "Title"
+            },
+            "text": {
+              "label": "Text"
+            }
+          }
+        }
+      }
+    }
   }
 }

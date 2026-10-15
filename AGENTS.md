@@ -104,6 +104,7 @@ Snippets and blocks (when blocks are statically rendered) must include the Liqui
 When defining the `{% schema %}` tag on sections and blocks, follow these guidelines to use the values:
 
 **Single property settings**: For settings that correspond to a single CSS property, use CSS variables:
+
 ```liquid
 <div class="collection" style="--gap: {{ block.settings.gap }}px">
   Example
@@ -131,6 +132,7 @@ When defining the `{% schema %}` tag on sections and blocks, follow these guidel
 ```
 
 **Multiple property settings**: For settings that control multiple CSS properties, use CSS classes:
+
 ```liquid
 <div class="collection {{ block.settings.layout }}">
   Example
@@ -191,20 +193,23 @@ If you need to create a mobile layout and you want the merchant to be able to se
 Adding a dash (`-`) after `{%`/`{{` or before `%}`/`}}` trims spaces or newlines next to the tag.
 
 **Examples:**
+
 - `{{- product.title -}}` → print value, remove surrounding spaces or lines.
 - `{%- if available -%}In stock{%- endif -%}` → logic, removes extra spaces/lines.
 
 ### Liquid operators
 
 **Comparison operators:**
+
 - ==
 - !=
 - >
 - <
-- >=
+- > =
 - <=
 
 **Logical operators:**
+
 - `or`
 - `and`
 - `contains` - checks if a string contains a substring, or if an array contains a string
@@ -212,11 +217,13 @@ Adding a dash (`-`) after `{%`/`{{` or before `%}`/`}}` trims spaces or newlines
 #### Comparison and comparison tags
 
 **Key condition principles:**
+
 - For simplificity, ALWAYS use nested `if` conditions when the logic requires more than one logical operator
 - Parentheses are not supported in Liquid
 - Ternary conditionals are not supported in Liquid, so always use `{% if cond %}`
 
 **Basic comparison example:**
+
 ```liquid
 {% if product.title == "Awesome Shoes" %}
   These shoes are awesome!
@@ -224,6 +231,7 @@ Adding a dash (`-`) after `{%`/`{{` or before `%}`/`}}` trims spaces or newlines
 ```
 
 **Multiple Conditions:**
+
 ```liquid
 {% if product.type == "Shirt" or product.type == "Shoes" %}
   This is a shirt or a pair of shoes.
@@ -231,11 +239,13 @@ Adding a dash (`-`) after `{%`/`{{` or before `%}`/`}}` trims spaces or newlines
 ```
 
 **Contains Usage:**
+
 - For strings: `{% if product.title contains "Pack" %}`
 - For arrays: `{% if product.tags contains "Hello" %}`
 - Note: `contains` only works with strings, not objects in arrays
 
 **{% elsif %} (used inside if/unless only)**
+
 ```liquid
 {% if a %}
   ...
@@ -245,6 +255,7 @@ Adding a dash (`-`) after `{%`/`{{` or before `%}`/`}}` trims spaces or newlines
 ```
 
 **{% unless %}**
+
 ```liquid
 {% unless condition %}
   ...
@@ -252,6 +263,7 @@ Adding a dash (`-`) after `{%`/`{{` or before `%}`/`}}` trims spaces or newlines
 ```
 
 **{% case %}**
+
 ```liquid
 {% case variable %}
   {% when 'a' %}
@@ -264,6 +276,7 @@ Adding a dash (`-`) after `{%`/`{{` or before `%}`/`}}` trims spaces or newlines
 ```
 
 **{% else %} (used inside if, unless, case, or for)**
+
 ```liquid
 {% if product.available %}
   In stock
@@ -271,7 +284,9 @@ Adding a dash (`-`) after `{%`/`{{` or before `%}`/`}}` trims spaces or newlines
   Sold out
 {% endif %}
 ```
+
 _or inside a for loop:_
+
 ```liquid
 {% for item in collection.products %}
   {{ item.title }}
@@ -318,6 +333,7 @@ Here's how the filters are executed step by step to eventually return `"WORLD"`:
 - Finally, the `last` filter work with array, so `"WORLD"` is returned
 
 #### Array
+
 - `compact`: `{{ array | compact }}` returns `array`
 - `concat`: `{{ array | concat: array }}` returns `array`
 - `find`: `{{ array | find: string, string }}` returns `untyped`
@@ -337,10 +353,12 @@ Here's how the filters are executed step by step to eventually return `"WORLD"`:
 - `where`: `{{ array | where: string, string }}` returns `array`
 
 #### Cart
+
 - `item_count_for_variant`: `{{ cart | item_count_for_variant: {variant_id} }}` returns `number`
 - `line_items_for`: `{{ cart | line_items_for: object }}` returns `array`
 
 #### Collection
+
 - `link_to_type`: `{{ string | link_to_type }}` returns `string`
 - `link_to_vendor`: `{{ string | link_to_vendor }}` returns `string`
 - `sort_by`: `{{ string | sort_by: string }}` returns `string`
@@ -350,6 +368,7 @@ Here's how the filters are executed step by step to eventually return `"WORLD"`:
 - `highlight_active_tag`: `{{ string | highlight_active_tag }}` returns `string`
 
 #### Color
+
 - `brightness_difference`: `{{ string | brightness_difference: string }}` returns `number`
 - `color_brightness`: `{{ string | color_brightness }}` returns `number`
 - `color_contrast`: `{{ string | color_contrast: string }}` returns `number`
@@ -368,6 +387,7 @@ Here's how the filters are executed step by step to eventually return `"WORLD"`:
 - `hex_to_rgba`: `{{ string | hex_to_rgba }}` returns `string`
 
 #### Customer
+
 - `customer_login_link`: `{{ string | customer_login_link }}` returns `string`
 - `customer_logout_link`: `{{ string | customer_logout_link }}` returns `string`
 - `customer_register_link`: `{{ string | customer_register_link }}` returns `string`
@@ -375,19 +395,23 @@ Here's how the filters are executed step by step to eventually return `"WORLD"`:
 - `login_button`: `{{ shop | login_button }}` returns `string`
 
 #### Date
+
 - `date`: `{{ date | date: string }}` returns `string`
 
 #### Default
+
 - `default_errors`: `{{ string | default_errors }}` returns `string`
 - `default`: `{{ variable | default: variable }}` returns `untyped`
 - `default_pagination`: `{{ paginate | default_pagination }}` returns `string`
 
 #### Font
+
 - `font_face`: `{{ font | font_face }}` returns `string`
 - `font_modify`: `{{ font | font_modify: string, string }}` returns `font`
 - `font_url`: `{{ font | font_url }}` returns `string`
 
 #### Format
+
 - `date`: `{{ string | date: string }}` returns `string`
 - `json`: `{{ variable | json }}` returns `string`
 - `structured_data`: `{{ variable | structured_data }}` returns `string`
@@ -395,6 +419,7 @@ Here's how the filters are executed step by step to eventually return `"WORLD"`:
 - `weight_with_unit`: `{{ number | weight_with_unit }}` returns `string`
 
 #### Hosted_file
+
 - `asset_img_url`: `{{ string | asset_img_url }}` returns `string`
 - `asset_url`: `{{ string | asset_url }}` returns `string`
 - `file_img_url`: `{{ string | file_img_url }}` returns `string`
@@ -403,6 +428,7 @@ Here's how the filters are executed step by step to eventually return `"WORLD"`:
 - `shopify_asset_url`: `{{ string | shopify_asset_url }}` returns `string`
 
 #### Html
+
 - `time_tag`: `{{ string | time_tag: string }}` returns `string`
 - `inline_asset_content`: `{{ asset_name | inline_asset_content }}` returns `string`
 - `highlight`: `{{ string | highlight: string }}` returns `string`
@@ -413,11 +439,13 @@ Here's how the filters are executed step by step to eventually return `"WORLD"`:
 - `stylesheet_tag`: `{{ string | stylesheet_tag }}` returns `string`
 
 #### Localization
+
 - `currency_selector`: `{{ form | currency_selector }}` returns `string`
 - `translate`: `{{ string | t }}` returns `string`
 - `format_address`: `{{ address | format_address }}` returns `string`
 
 #### Math
+
 - `abs`: `{{ number | abs }}` returns `number`
 - `at_least`: `{{ number | at_least }}` returns `number`
 - `at_most`: `{{ number | at_most }}` returns `number`
@@ -431,6 +459,7 @@ Here's how the filters are executed step by step to eventually return `"WORLD"`:
 - `times`: `{{ number | times: number }}` returns `number`
 
 #### Media
+
 - `external_video_tag`: `{{ variable | external_video_tag }}` returns `string`
 - `external_video_url`: `{{ media | external_video_url: attribute: string }}` returns `string`
 - `image_tag`: `{{ string | image_tag }}` returns `string`
@@ -445,22 +474,26 @@ Here's how the filters are executed step by step to eventually return `"WORLD"`:
 - `product_img_url`: `{{ variable | product_img_url }}` returns `string`
 
 #### Metafield
+
 - `metafield_tag`: `{{ metafield | metafield_tag }}` returns `string`
 - `metafield_text`: `{{ metafield | metafield_text }}` returns `string`
 
 #### Money
+
 - `money`: `{{ number | money }}` returns `string`
 - `money_with_currency`: `{{ number | money_with_currency }}` returns `string`
 - `money_without_currency`: `{{ number | money_without_currency }}` returns `string`
 - `money_without_trailing_zeros`: `{{ number | money_without_trailing_zeros }}` returns `string`
 
 #### Payment
+
 - `payment_button`: `{{ form | payment_button }}` returns `string`
 - `payment_terms`: `{{ form | payment_terms }}` returns `string`
 - `payment_type_img_url`: `{{ string | payment_type_img_url }}` returns `string`
 - `payment_type_svg_tag`: `{{ string | payment_type_svg_tag }}` returns `string`
 
 #### String
+
 - `blake3`: `{{ string | blake3 }}` returns `string`
 - `hmac_sha1`: `{{ string | hmac_sha1: string }}` returns `string`
 - `hmac_sha256`: `{{ string | hmac_sha256: string }}` returns `string`
@@ -503,6 +536,7 @@ Here's how the filters are executed step by step to eventually return `"WORLD"`:
 - `pluralize`: `{{ number | pluralize: string, string }}` returns `string`
 
 #### Tag
+
 - `link_to_add_tag`: `{{ string | link_to_add_tag }}` returns `string`
 - `link_to_remove_tag`: `{{ string | link_to_remove_tag }}` returns `string`
 - `link_to_tag`: `{{ string | link_to_tag }}` returns `string`
@@ -510,6 +544,7 @@ Here's how the filters are executed step by step to eventually return `"WORLD"`:
 ### Liquid objects
 
 #### Global objects
+
 - `collections`
 - `pages`
 - `all_products`
@@ -545,66 +580,82 @@ Here's how the filters are executed step by step to eventually return `"WORLD"`:
 - `scripts`
 
 #### `/article` page
+
 - `article`
 - `blog`
 
 #### `/blog` page
+
 - `blog`
 - `current_tags`
 
 #### `/cart` page
+
 - `cart`
 
 #### `/checkout` page
+
 - `checkout`
 
 #### `/collection` page
+
 - `collection`
 - `current_tags`
 
 #### `/customers/account` page
+
 - `customer`
 
 #### `/customers/addresses` page
+
 - `customer`
 
 #### `/customers/order` page
+
 - `customer`
 - `order`
 
 #### `/gift_card.liquid` page
+
 - `gift_card`
 - `recipient`
 
 #### `/metaobject` page
+
 - `metaobject`
 
 #### `/page` page
+
 - `page`
 
 #### `/product` page
+
 - `product`
 - `remote_product`
 
 #### `/robots.txt.liquid` page
+
 - `robots`
 
 #### `/search` page
+
 - `search`
+
 ### Liquid tags
 
-
 #### content_for
+
 The `content_for` tag requires a type parameter to differentiate between rendering a number of theme blocks (`'blocks'`) and a single static block (`'block'`).
 
-
 Syntax:
+
 ```
 {% content_for 'blocks' %}
 {% content_for 'block', type: "slide", id: "slide-1" %}
 ```
 
 #### form
+
 Because there are many different form types available in Shopify themes, the `form` tag requires a type. Depending on the
 form type, an additional parameter might be required. You can specify the following form types:
 
@@ -624,8 +675,8 @@ form type, an additional parameter might be required. You can specify the follow
 - [`reset_customer_password`](https://shopify.dev/docs/api/liquid/tags/form#form-reset_customer_password)
 - [`storefront_password`](https://shopify.dev/docs/api/liquid/tags/form#form-storefront_password)
 
-
 Syntax:
+
 ```
 {% form 'form_type' %}
   content
@@ -635,19 +686,21 @@ Syntax:
 #### layout
 
 Syntax:
+
 ```
 {% layout name %}
 ```
 
 #### assign
+
 You can create variables of any [basic type](https://shopify.dev/docs/api/liquid/basics#types), [object](https://shopify.dev/docs/api/liquid/objects), or object property.
 
 > Caution:
 > Predefined Liquid objects can be overridden by variables with the same name.
 > To make sure that you can access all Liquid objects, make sure that your variable name doesn't match a predefined object's name.
 
-
 Syntax:
+
 ```
 {% assign variable_name = value %}
 ```
@@ -655,19 +708,21 @@ Syntax:
 #### break
 
 Syntax:
+
 ```
 {% break %}
 ```
 
 #### capture
+
 You can create complex strings with Liquid logic and variables.
 
 > Caution:
 > Predefined Liquid objects can be overridden by variables with the same name.
 > To make sure that you can access all Liquid objects, make sure that your variable name doesn't match a predefined object's name.
 
-
 Syntax:
+
 ```
 {% capture variable %}
   value
@@ -677,6 +732,7 @@ Syntax:
 #### case
 
 Syntax:
+
 ```
 {% case variable %}
   {% when first_value %}
@@ -689,10 +745,11 @@ Syntax:
 ```
 
 #### comment
+
 Any text inside `comment` tags won't be output, and any Liquid code will be parsed, but not executed.
 
-
 Syntax:
+
 ```
 {% comment %}
   content
@@ -702,23 +759,26 @@ Syntax:
 #### continue
 
 Syntax:
+
 ```
 {% continue %}
 ```
 
 #### cycle
+
 The `cycle` tag must be used inside a `for` loop.
 
 > Tip:
 > Use the `cycle` tag to output text in a predictable pattern. For example, to apply odd/even classes to rows in a table.
 
-
 Syntax:
+
 ```
 {% cycle string, string, ... %}
 ```
 
 #### decrement
+
 Variables that are declared with `decrement` are unique to the [layout](/themes/architecture/layouts), [template](/themes/architecture/templates),
 or [section](/themes/architecture/sections) file that they're created in. However, the variable is shared across
 [snippets](/themes/architecture/snippets) included in the file.
@@ -727,13 +787,14 @@ Similarly, variables that are created with `decrement` are independent from thos
 and [`capture`](https://shopify.dev/docs/api/liquid/tags/capture). However, `decrement` and [`increment`](https://shopify.dev/docs/api/liquid/tags/increment) share
 variables.
 
-
 Syntax:
+
 ```
 {% decrement variable_name %}
 ```
 
 #### doc
+
 The `doc` tag allows developers to include documentation within Liquid
 templates. Any content inside `doc` tags is not rendered or outputted.
 Liquid code inside will be parsed but not executed. This facilitates
@@ -743,8 +804,8 @@ documentation.
 For detailed documentation syntax and examples, see the
 [`LiquidDoc` reference](https://shopify.dev/docs/storefronts/themes/tools/liquid-doc).
 
-
 Syntax:
+
 ```
 {% doc %}
   Renders a message.
@@ -758,14 +819,15 @@ Syntax:
 ```
 
 #### echo
+
 Using the `echo` tag is the same as wrapping an expression in curly brackets (`{{` and `}}`). However, unlike the curly
 bracket method, you can use the `echo` tag inside [`liquid` tags](https://shopify.dev/docs/api/liquid/tags/liquid).
 
 > Tip:
 > You can use [filters](https://shopify.dev/docs/api/liquid/filters) on expressions inside `echo` tags.
 
-
 Syntax:
+
 ```
 {% liquid
   echo expression
@@ -773,14 +835,15 @@ Syntax:
 ```
 
 #### for
+
 You can do a maximum of 50 iterations with a `for` loop. If you need to iterate over more than 50 items, then use the
 [`paginate` tag](https://shopify.dev/docs/api/liquid/tags/paginate) to split the items over multiple pages.
 
 > Tip:
 > Every `for` loop has an associated [`forloop` object](https://shopify.dev/docs/api/liquid/objects/forloop) with information about the loop.
 
-
 Syntax:
+
 ```
 {% for variable in array %}
   expression
@@ -790,6 +853,7 @@ Syntax:
 #### if
 
 Syntax:
+
 ```
 {% if condition %}
   expression
@@ -797,6 +861,7 @@ Syntax:
 ```
 
 #### increment
+
 Variables that are declared with `increment` are unique to the [layout](/themes/architecture/layouts), [template](/themes/architecture/templates),
 or [section](/themes/architecture/sections) file that they're created in. However, the variable is shared across
 [snippets](/themes/architecture/snippets) included in the file.
@@ -805,8 +870,8 @@ Similarly, variables that are created with `increment` are independent from thos
 and [`capture`](https://shopify.dev/docs/api/liquid/tags/capture). However, `increment` and [`decrement`](https://shopify.dev/docs/api/liquid/tags/decrement) share
 variables.
 
-
 Syntax:
+
 ```
 {% increment variable_name %}
 ```
@@ -814,6 +879,7 @@ Syntax:
 #### raw
 
 Syntax:
+
 ```
 {% raw %}
   expression
@@ -821,6 +887,7 @@ Syntax:
 ```
 
 #### render
+
 Inside snippets and app blocks, you can't directly access variables that are [created](https://shopify.dev/docs/api/liquid/tags/variable-tags) outside
 of the snippet or app block. However, you can [specify variables as parameters](https://shopify.dev/docs/api/liquid/tags/render#render-passing-variables-to-a-snippet)
 to pass outside variables to snippets.
@@ -836,20 +903,21 @@ Outside a snippet or app block, you can't access variables created inside the sn
 > When you render a snippet using the `render` tag, you can't use the [`include` tag](https://shopify.dev/docs/api/liquid/tags/include)
 > inside the snippet.
 
-
 Syntax:
+
 ```
 {% render 'filename' %}
 ```
 
 #### tablerow
+
 The `tablerow` tag must be wrapped in HTML `<table>` and `</table>` tags.
 
 > Tip:
 > Every `tablerow` loop has an associated [`tablerowloop` object](https://shopify.dev/docs/api/liquid/objects/tablerowloop) with information about the loop.
 
-
 Syntax:
+
 ```
 {% tablerow variable in array %}
   expression
@@ -857,11 +925,12 @@ Syntax:
 ```
 
 #### unless
+
 > Tip:
 > Similar to the [`if` tag](https://shopify.dev/docs/api/liquid/tags/if), you can use `elsif` to add more conditions to an `unless` tag.
 
-
 Syntax:
+
 ```
 {% unless condition %}
   expression
@@ -869,6 +938,7 @@ Syntax:
 ```
 
 #### paginate
+
 Because [`for` loops](https://shopify.dev/docs/api/liquid/tags/for) are limited to 50 iterations per page, you need to use the `paginate` tag to
 iterate over an array that has more than 50 items. The following arrays can be paginated:
 
@@ -894,8 +964,8 @@ object, or the [`default_pagination` filter](https://shopify.dev/docs/api/liquid
 > the array the array should be filtered further before paginating. See
 > [Pagination Limits](/themes/best-practices/performance/platform#pagination-limits) for more information.
 
-
 Syntax:
+
 ```
 {% paginate array by page_size %}
   {% for item in array %}
@@ -905,14 +975,16 @@ Syntax:
 ```
 
 #### javascript
+
 Each section, block or snippet can have only one `{% javascript %}` tag.
 
 To learn more about how JavaScript that's defined between the `javascript` tags is loaded and run, refer to the documentation for [javascript tags](/storefronts/themes/best-practices/javascript-and-stylesheet-tags#javascript).
+
 > Caution:
 > Liquid isn't rendered inside of `{% javascript %}` tags. Including Liquid code can cause syntax errors.
 
-
 Syntax:
+
 ```
 {% javascript %}
   javascript_code
@@ -920,24 +992,27 @@ Syntax:
 ```
 
 #### section
+
 Rendering a section with the `section` tag renders a section statically. To learn more about sections and how to use
 them in your theme, refer to [Render a section](/themes/architecture/sections#render-a-section).
 
-
 Syntax:
+
 ```
 {% section 'name' %}
 ```
 
 #### stylesheet
+
 Each section, block or snippet can have only one `{% stylesheet %}` tag.
 
 To learn more about how CSS that's defined between the `stylesheet` tags is loaded and run, refer to the documentation for [stylesheet tags](/storefronts/themes/best-practices/javascript-and-stylesheet-tags#stylesheet).
+
 > Caution:
 > Liquid isn't rendered inside of `{% stylesheet %}` tags. Including Liquid code can cause syntax errors.
 
-
 Syntax:
+
 ```
 {% stylesheet %}
   css_styles
@@ -945,23 +1020,25 @@ Syntax:
 ```
 
 #### sections
+
 Use this tag to render section groups as part of the theme's [layout](/themes/architecture/layouts) content. Place the `sections` tag where you want to render it in the layout.
 
 To learn more about section groups and how to use them in your theme, refer to [Section groups](/themes/architecture/section-groups#usage).
 
-
 Syntax:
+
 ```
 {% sections 'name' %}
 ```
 
 #### style
+
 > Note:
 > If you reference [color settings](/themes/architecture/settings/input-settings#color) inside `style` tags, then
 > the associated CSS rules will update as the setting is changed in the theme editor, without a page refresh.
 
-
 Syntax:
+
 ```
 {% style %}
   CSS_rules
@@ -969,14 +1046,15 @@ Syntax:
 ```
 
 #### else
+
 You can use the `else` tag with the following tags:
 
 - [`case`](https://shopify.dev/docs/api/liquid/tags/case)
 - [`if`](https://shopify.dev/docs/api/liquid/tags/if)
 - [`unless`](https://shopify.dev/docs/api/liquid/tags/unless)
 
-
 Syntax:
+
 ```
 {% else %}
   expression
@@ -985,6 +1063,7 @@ Syntax:
 #### else
 
 Syntax:
+
 ```
 {% for variable in array %}
   first_expression
@@ -994,19 +1073,19 @@ Syntax:
 ```
 
 #### liquid
+
 Because the tags don't have delimeters, each tag needs to be on its own line.
 
 > Tip:
 > Use the [`echo` tag](https://shopify.dev/docs/api/liquid/tags/echo) to output an expression inside `liquid` tags.
 
-
 Syntax:
+
 ```
 {% liquid
   expression
 %}
 ```
-
 
 ## Translation development standards
 
@@ -1061,16 +1140,17 @@ Syntax:
 ### Best practices
 
 **Content guidelines:**
+
 - Write clear, concise text.
 - **Use sentence case** for all user-facing text, including titles, headings, and button labels (capitalize only the first word and proper nouns; e.g., `Featured collection` → `Featured collection`, not `Featured Collection`).
 - Be consistent with terminology.
 - Consider character limits for UI elements.
 
 **Variable usage:**
+
 - Use interpolation rather than appending strings together.
 - Prioritize clarity over brevity for variable naming.
 - Escape variables unless they output HTML: `{{ variable | escape }}`.
-
 
 ## Localization standards
 
@@ -1095,6 +1175,7 @@ locales/
 Locale files are JSON files containing translations for all the text strings used throughout a Shopify theme and its editor. They let merchants easily update and localize repeated words and phrases, making it possible to translate store content and settings into multiple languages for international customers. These files provide a centralized way to manage and edit translations.
 
 **Example:**
+
 ```json
 {
   "general": {
@@ -1112,6 +1193,7 @@ Locale files are JSON files containing translations for all the text strings use
 Schema locale files, saved with a .schema.json extension, store translation strings specifically for theme editor setting schemas. They follow a structured organization—category, group, and description—to give context to each translation, enabling accurate localization of editor content. Schema locale files must use the IETF language tag format in their naming, such as en-GB.schema.json for British English or fr-CA.schema.json for Canadian French.
 
 **Example:**
+
 ```json
 {
   "products": {
@@ -1125,6 +1207,7 @@ Schema locale files, saved with a .schema.json extension, store translation stri
 ### Key organization
 
 **Hierarchical structure:**
+
 ```json
 {
   "general": {
@@ -1148,7 +1231,9 @@ Schema locale files, saved with a .schema.json extension, store translation stri
   }
 }
 ```
+
 **Usage**
+
 ```liquid
 {{ 'general.meta.title' | t: shop_name: shop.name }}
 {{ 'general.meta.description' | t: shop_description: shop.description }}
@@ -1157,12 +1242,14 @@ Schema locale files, saved with a .schema.json extension, store translation stri
 ### Translation guidelines
 
 **Key naming:**
+
 - Use descriptive, hierarchical keys
 - Maximum 3 levels deep
 - Use snake_case for key names
 - Group related translations
 
 **Content rules:**
+
 - Keep text concise for UI elements
 - Use variables for dynamic content
 - Consider character limits
@@ -1487,3 +1574,96 @@ Schema locale files, saved with a .schema.json extension, store translation stri
 {% endschema %}
 ```
 
+---
+
+# Northfold project-specific instructions
+
+These instructions supplement the Shopify theme guidance above. If a project-specific requirement appears to conflict with general guidance, follow Shopify's platform requirements first and preserve the Northfold ticket requirements wherever compatible. Do not delete or weaken the Shopify-provided guidance.
+
+## Project purpose
+
+Rebuild the Northfold Stoneware product page as a configurable Shopify theme section so the Northfold team can manage routine product-page presentation through Shopify's Theme Editor.
+
+## Working directory and reference implementation
+
+The current working directory is the Shopify theme repository, `northfold-theme`.
+
+The existing API-driven Northfold implementation is at this relative path:
+
+`../../Day 2/Assignment/northfold-stoneware-v2`
+
+Before reading the reference, verify that this path resolves from the current working directory. If it does not, stop and ask the user; do not guess another path.
+
+Treat the reference implementation as read-only. Use it to understand Northfold's design, gallery, variant-selection behaviour, and responsive layout. Do not modify it or copy the V2 application wholesale into the Shopify theme.
+
+## Ticket requirements — core scope
+
+1. Create `sections/northfold-product.liquid`.
+2. Update `templates/product.json` to use `northfold-product` in place of the current default product section. Make the smallest coherent change and preserve unrelated template settings, sections, app blocks, and JSON configuration.
+3. Source all product-specific data from Shopify's Liquid `product` object: title, price, description, product images/media, option values, and variants. Use the `money` filter for price. Do not hardcode product names, prices, option names, variant IDs, option values, or image URLs.
+4. Render product images using `image_url` and `image_tag`.
+5. Use Shopify's native `{% form 'product', product %}` form. Ensure the selected variant is submitted through the correct variant `id` field and is the variant added to the cart.
+6. Implement benefits as section blocks. Each block must have editable title and text settings, and merchants must be able to add, remove, edit, and reorder blocks.
+7. Include at least three useful section settings, including a benefits heading, background colour, and a checkbox to show or hide the quantity input.
+8. Keep the layout responsive and accessible. Put section CSS in `{% stylesheet %}` or a suitable asset file, following the theme's established conventions.
+9. Follow the Shopify-provided guidance for Liquid, schema, snippets, accessibility, localization, and validation. Add locale keys for new storefront UI strings where required by the theme's conventions.
+10. Do not claim that Theme Check, browser tests, GitHub pushes, or Shopify pushes succeeded unless the relevant action was actually performed and its result inspected.
+
+## Architecture and implementation constraints
+
+- Inspect the theme before editing: identify the current product template and section, existing snippets/assets, section schema conventions, localization conventions, and product form/cart behaviour.
+- Keep Shopify Liquid and Shopify's product object as the source of truth. Do not fetch product data from mock.shop or another external API.
+- Do not port the Day 2 custom cart or localStorage cart persistence. Use the native Shopify product form and cart workflow.
+- Build option controls from the actual product options and variants; do not assume fixed option names or a fixed number of options.
+- Handle sold-out/unavailable variants based on Shopify product data; do not assume all variants are purchasable.
+- Render all relevant product images/media from Liquid and preserve the Northfold reference's visual character while adapting to the installed theme.
+- Keep JavaScript minimal and scoped to the section instance. Do not add frameworks, dependencies, unrelated features, or broad refactors.
+- Preserve existing user changes and unrelated theme configuration. Never use destructive Git commands or discard work to simplify implementation.
+
+## Stretch goals — separate stages only
+
+Do not implement stretch goals during the initial core implementation. Wait until the user has reviewed the core section in the running `shopify theme dev` preview and explicitly approves the next stage.
+
+- Variant selection updates the displayed price without a full page reload, adapting relevant Day 2 logic while using Liquid-rendered variant data.
+- Responsive images use suitable `widths` and `sizes` parameters with `image_tag`.
+- Benefits markup is extracted into a snippet and included with `render`, passing needed parameters explicitly and following Shopify's LiquidDoc conventions.
+
+Implement and review one stretch goal at a time.
+
+## Required staged workflow
+
+Work only on the stage explicitly requested. Do not automatically continue to the next stage.
+
+1. Inspect and plan; no edits until the user approves the plan.
+2. Implement only the core ticket requirements.
+3. Stop for manual review in the user's already-running `shopify theme dev` preview.
+4. Fix only issues the user identifies, if any.
+5. Implement approved stretch goals one at a time, with a review checkpoint after each.
+6. Run `shopify theme check` and inspect the actual output. Fix issues caused by this work without silently expanding scope.
+7. Review `git status` and the diff. Commit/push only after explicit approval.
+8. Run `shopify theme push --unpublished` only after explicit approval. Never publish or overwrite the live theme.
+
+## Shopify AI Toolkit requirement
+
+The Shopify-provided instructions above require calling `learn_shopify_api` once when working with Liquid themes. Before implementation, check whether that tool/skill is available in the current Codex environment and invoke it once as required. Use the Shopify AI Toolkit for Shopify platform work. If it is unavailable, report that limitation and follow the Shopify-provided setup guidance rather than pretending the tool was called. Do not silently remove this requirement.
+
+## Manual checkpoints and external actions
+
+- The user manages Shopify authentication, store access, and the running `shopify theme dev` session.
+- Do not stop or replace the dev server unless asked.
+- Do not commit or push to GitHub without explicit approval.
+- `shopify theme push --unpublished` is an external upload and requires explicit approval, even though it does not publish the live theme.
+- If the CLI asks the user to select a store/theme or the target is ambiguous, stop and ask the user to complete or confirm the selection.
+- Report environmental limitations honestly.
+
+## Stage completion report
+
+At the end of each approved stage, report:
+
+- Files created or changed.
+- Meaningful implementation decisions.
+- Validation commands actually run and their results.
+- Manual checks the user should perform next.
+- Remaining limitations or work.
+
+Avoid large code dumps unless the user explicitly requests them.
