@@ -1,4 +1,4 @@
-<div class="northfold-header">
+<div class="northfold-header full-width">
   <div class="northfold-header__announcement" role="note">
     <div class="northfold-header__announcement-inner">
       <p>{{ section.settings.announcement_primary | escape }}</p>
@@ -192,15 +192,7 @@
     outline-offset: 4px;
   }
 
-  @media (max-width: 749px) {
-    .northfold-header__announcement-inner {
-      min-height: 2rem;
-      justify-content: center;
-      padding-inline: 1rem;
-      text-align: center;
-    }
-
-    .northfold-header__announcement-secondary,
+  @media (max-width: 899px) {
     .northfold-header__navigation {
       display: none;
     }
@@ -264,6 +256,19 @@
       grid-column: 3;
       grid-row: 1;
       gap: 0.5rem;
+    }
+  }
+
+  @media (max-width: 749px) {
+    .northfold-header__announcement-inner {
+      min-height: 2rem;
+      justify-content: center;
+      padding-inline: 1rem;
+      text-align: center;
+    }
+
+    .northfold-header__announcement-secondary {
+      display: none;
     }
   }
 {% endstylesheet %}
