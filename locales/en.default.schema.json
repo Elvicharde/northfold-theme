@@ -83,6 +83,14 @@
     }
   },
   "sections": {
+    "northfold_home": {
+      "name": "Northfold home",
+      "settings": {
+        "collection": {
+          "label": "Collection link"
+        }
+      }
+    },
     "northfold_product": {
       "name": "Northfold product",
       "settings": {

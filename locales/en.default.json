@@ -55,11 +55,22 @@
     "product": {
       "add_to_cart": "Add to cart",
       "gallery": "Product images",
+      "view_image": "View image {{ index }}: {{ alt }}",
       "options_error": "Unable to update options. Refresh the page and try again.",
       "price": "Price",
       "quantity": "Quantity",
       "sold_out": "Sold out",
       "updating_options": "Updating product options."
+    }
+  },
+  "sections": {
+    "northfold_home": {
+      "eyebrow": "Northfold Stoneware",
+      "title": "Stoneware for everyday rituals",
+      "description": "Thoughtful ceramic pieces for the table, the kitchen, and the quiet moments in between.",
+      "shop_collection": "Explore the collection",
+      "shop_all": "Shop all pieces",
+      "no_products": "Our collection is taking shape. Please check back soon."
     }
   },
   "search": {
