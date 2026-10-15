@@ -55,7 +55,8 @@
 {% stylesheet %}
   .northfold-home-hero {
     display: grid;
-    min-height: clamp(30rem, 36vw, 36rem);
+    min-height: calc(90vh - 8.5rem);
+    min-height: calc(90svh - 8.5rem);
     grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
     align-items: stretch;
     background: #f4f0e9;
@@ -115,9 +116,9 @@
   .northfold-home-hero__visual {
     position: relative;
     min-width: 0;
-    min-height: clamp(30rem, 36vw, 36rem);
+    min-height: 0;
     overflow: hidden;
-    background: #d8d0c2;
+    background: #f4f0e9;
   }
 
   .northfold-home-hero__visual img {
@@ -125,13 +126,20 @@
     inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     object-position: center;
   }
 
   .northfold-home-hero__empty {
     margin-block-start: 1.5rem;
     line-height: 1.6;
+  }
+
+  @media (min-width: 750px) and (max-width: 899px) {
+    .northfold-home-hero {
+      min-height: calc(90vh - 7.25rem);
+      min-height: calc(90svh - 7.25rem);
+    }
   }
 
   @media (max-width: 749px) {
@@ -151,7 +159,8 @@
 
     .northfold-home-hero__visual {
       min-height: 0;
-      height: clamp(18rem, 68vw, 30rem);
+      height: auto;
+      aspect-ratio: 1 / 1;
     }
   }
 {% endstylesheet %}
