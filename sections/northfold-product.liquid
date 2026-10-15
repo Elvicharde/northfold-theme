@@ -93,6 +93,8 @@
               value="1"
             >
           </div>
+        {% else %}
+          <input type="hidden" name="quantity" value="1">
         {% endif %}
 
         <p class="northfold-product__status" data-northfold-status role="status" aria-live="polite">
@@ -114,21 +116,30 @@
     </div>
   </div>
 
-  {% if section.blocks.size > 0 %}
+  {% assign benefit_count = 0 %}
+  {% for block in section.blocks %}
+    {% if block.settings.title != blank or block.settings.text != blank %}
+      {% assign benefit_count = benefit_count | plus: 1 %}
+    {% endif %}
+  {% endfor %}
+
+  {% if benefit_count > 0 %}
     <div class="northfold-product__benefits">
       {% if section.settings.benefits_heading != blank %}
         <h2 class="northfold-product__benefits-heading">{{ section.settings.benefits_heading | escape }}</h2>
       {% endif %}
       <div class="northfold-product__benefit-list">
         {% for block in section.blocks %}
-          <article class="northfold-product__benefit" {{ block.shopify_attributes }}>
-            {% if block.settings.title != blank %}
-              <h3>{{ block.settings.title | escape }}</h3>
-            {% endif %}
-            {% if block.settings.text != blank %}
-              <div>{{ block.settings.text }}</div>
-            {% endif %}
-          </article>
+          {% if block.settings.title != blank or block.settings.text != blank %}
+            <article class="northfold-product__benefit" {{ block.shopify_attributes }}>
+              {% if block.settings.title != blank %}
+                <h3>{{ block.settings.title | escape }}</h3>
+              {% endif %}
+              {% if block.settings.text != blank %}
+                <div>{{ block.settings.text }}</div>
+              {% endif %}
+            </article>
+          {% endif %}
         {% endfor %}
       </div>
     </div>
@@ -465,6 +476,7 @@
 {% schema %}
 {
   "name": "t:sections.northfold_product.name",
+  "max_blocks": 3,
   "settings": [
     {
       "type": "text",
@@ -505,7 +517,30 @@
   ],
   "presets": [
     {
-      "name": "t:sections.northfold_product.name"
+      "name": "t:sections.northfold_product.name",
+      "blocks": [
+        {
+          "type": "benefit",
+          "settings": {
+            "title": "For everyday rituals",
+            "text": "<p>A considered stoneware piece for coffee, tea, and the moments around them.</p>"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "title": "Choose your finish",
+            "text": "<p>Explore the available finishes and choose the one that feels at home on your table.</p>"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "title": "Made for your table",
+            "text": "<p>A familiar form to bring into your everyday meals and quiet moments.</p>"
+          }
+        }
+      ]
     }
   ]
 }

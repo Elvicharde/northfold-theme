@@ -128,7 +128,7 @@
           "label": "Background colour"
         },
         "show_quantity": {
-          "label": "Show quantity input"
+          "label": "Show quantity selector"
         }
       },
       "blocks": {

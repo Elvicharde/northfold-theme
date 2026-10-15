@@ -11,7 +11,35 @@
   "sections": {
     "main": {
       "type": "northfold-product",
-      "settings": {}
+      "settings": {},
+      "blocks": {
+        "benefit-1": {
+          "type": "benefit",
+          "settings": {
+            "title": "For everyday rituals",
+            "text": "<p>A considered stoneware piece for coffee, tea, and the moments around them.</p>"
+          }
+        },
+        "benefit-2": {
+          "type": "benefit",
+          "settings": {
+            "title": "Choose your finish",
+            "text": "<p>Explore the available finishes and choose the one that feels at home on your table.</p>"
+          }
+        },
+        "benefit-3": {
+          "type": "benefit",
+          "settings": {
+            "title": "Made for your table",
+            "text": "<p>A familiar form to bring into your everyday meals and quiet moments.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "benefit-1",
+        "benefit-2",
+        "benefit-3"
+      ]
     }
   },
   "order": [
