@@ -1,160 +1,63 @@
-<h1 align="center" style="position: relative;">
-  <br>
-    <img src="./assets/shoppy-x-ray.svg" alt="logo" width="200">
-  <br>
-  Shopify Skeleton Theme
-</h1>
+# Northfold Stoneware Shopify Theme
 
-A minimal, carefully structured Shopify theme designed to help you quickly get started. Designed with modularity, maintainability, and Shopify's best practices in mind.
+A Shopify Liquid theme for the Northfold Stoneware storefront. The theme uses Shopify product, collection, navigation, cart, and media data as its source of truth. Its Northfold page components are built into Liquid sections and snippets; it does not require a separate JavaScript framework.
 
-<p align="center">
-  <a href="./LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License"></a>
-  <a href="./actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Shopify/skeleton-theme/actions/workflows/ci.yml/badge.svg"></a>
-</p>
+## Requirements
 
-## Getting started
+- A Shopify store with permission to develop themes.
+- Shopify CLI installed and authenticated for that store.
+- A current product catalog, collections, product media, and navigation configured in Shopify Admin. Product cards and forms render the data available in the store.
 
-### Prerequisites
+## Local development
 
-Before starting, ensure you have the latest Shopify CLI installed:
+From the theme root, start a Shopify development preview:
 
-- [Shopify CLI](https://shopify.dev/docs/api/shopify-cli) – helps you download, upload, preview themes, and streamline your workflows
-
-If you use VS Code:
-
-- [Shopify Liquid VS Code Extension](https://shopify.dev/docs/storefronts/themes/tools/shopify-liquid-vscode) – provides syntax highlighting, linting, inline documentation, and auto-completion specifically designed for Liquid templates
-
-### Clone
-
-Clone this repository using Git or Shopify CLI:
-
-```bash
-git clone git@github.com:Shopify/skeleton-theme.git
-# or
-shopify theme init
+```sh
+shopify theme dev --store your-store.myshopify.com
 ```
 
-### Preview
+Shopify CLI uploads the local theme as a development theme, starts a local preview, and prints the local preview, Theme Editor, and shareable preview URLs. While the command is running, theme file changes are synced to that development theme. This command does not activate the theme, but it does communicate with the selected store. Use the intended development store and review the target before running it.
 
-Preview this theme using Shopify CLI:
+To run the local static theme checks:
 
-```bash
-shopify theme dev
+```sh
+shopify theme check
 ```
+
+If storefront password protection is enabled, set a separate password in Shopify Admin under the online store password protection settings. Do not put the password in this repository, source files, command examples, or Git history. Supply it privately in the submission's designated note field.
 
 ## Theme architecture
 
-```bash
-.
-├── assets          # Stores static assets (CSS, JS, images, fonts, etc.)
-├── blocks          # Reusable, nestable, customizable UI components
-├── config          # Global theme settings and customization options
-├── layout          # Top-level wrappers for pages (layout templates)
-├── locales         # Translation files for theme internationalization
-├── sections        # Modular full-width page components
-├── snippets        # Reusable Liquid code or HTML fragments
-└── templates       # Templates combining sections to define page structures
-```
+- `layout/theme.liquid` loads critical CSS, metadata, Shopify's `content_for_header`, the header and footer section groups, and the active page template. It also references `assets/favicon.ico`.
+- `sections/header.liquid` renders the announcement bar, configurable Shopify navigation menu, mobile menu, and search, account, and cart links.
+- `sections/footer.liquid` renders the configured footer menu, copyright, and optional payment icons.
+- `sections/` contains page components. Component styles and JavaScript are colocated in Liquid section files using Shopify's `{% stylesheet %}` and `{% javascript %}` tags where used.
+- `snippets/` contains reusable markup, including `northfold-product-card.liquid` and the general image and metadata snippets.
+- `templates/` determines which sections appear on each page. `config/settings_schema.json` defines global theme settings; `config/settings_data.json` stores their theme configuration. The local theme metadata in `config/settings_schema.json` still identifies the base theme as “Skeleton” version 0.1.0 by Shopify.
+- `locales/en.default.json` contains storefront copy and accessible labels. `locales/en.default.schema.json` contains Theme Editor labels.
 
-To learn more, refer to the [theme architecture documentation](https://shopify.dev/docs/storefronts/themes/architecture).
+## Pages and storefront behavior
 
-### Templates
+### Homepage
 
-[Templates](https://shopify.dev/docs/storefronts/themes/architecture/templates#template-types) control what's rendered on each type of page in a theme.
+`templates/index.json` places the Northfold hero (`sections/hello-world.liquid`) above the featured collection (`sections/northfold-featured-collection.liquid`). The hero can use a merchant-selected collection, featured product, or image, with product/collection image fallbacks. The featured collection uses the selected collection and can feature a selected flagship product; it renders no more than four actual catalog products. On narrow screens, the product row can scroll horizontally. It does not create catalog items to fill empty card positions.
 
-The Skeleton Theme scaffolds [JSON templates](https://shopify.dev/docs/storefronts/themes/architecture/templates/json-templates) to make it easy for merchants to customize their store.
+The shared header and footer are rendered through `sections/header-group.json` and `sections/footer-group.json`. Navigation destinations come from Shopify routes or the merchant-selected menu.
 
-None of the template types are required, and not all of them are included in the Skeleton Theme. Refer to the [template types reference](https://shopify.dev/docs/storefronts/themes/architecture/templates#template-types) for a full list.
+### Collection page
 
-### Sections
+`templates/collection.json` uses `sections/collection.liquid`. It displays the Shopify collection title and description, renders product cards through `snippets/northfold-product-card.liquid`, paginates products, and shows pagination when there is more than one page. Cards use responsive Shopify images and prices. Variant swatches appear only when the product's option values have Shopify swatch color or image data.
 
-[Sections](https://shopify.dev/docs/storefronts/themes/architecture/sections) are Liquid files that allow you to create reusable modules of content that can be customized by merchants. They can also include blocks which allow merchants to add, remove, and reorder content within a section.
+### Product page
 
-Sections are made customizable by including a `{% schema %}` in the body. For more information, refer to the [section schema documentation](https://shopify.dev/docs/storefronts/themes/architecture/sections/section-schema).
+`templates/product.json` uses `sections/northfold-product.liquid` and includes three editable benefit blocks by default. The product section renders Shopify product media, a responsive main image, and a thumbnail strip. The thumbnail strip shows up to three thumbnails at once; its accessible previous/next controls appear when scrolling is needed, and selecting a thumbnail updates the main image in place.
 
-### Blocks
+Product options are generated from the product's actual Shopify options and values. Selecting an option requests the updated section from Shopify, then refreshes the selected variant ID, price, availability, and option states without a full-page navigation. Previous in-flight requests are aborted so an older response cannot replace a more recent selection. A subtle busy indicator is attached to the price. The form uses Shopify's native product form and submits the selected variant and quantity to the Shopify cart workflow. The quantity selector can be controlled in the section settings; when hidden, the form submits quantity one.
 
-[Blocks](https://shopify.dev/docs/storefronts/themes/architecture/blocks) let developers create flexible layouts by breaking down sections into smaller, reusable pieces of Liquid. Each block has its own set of settings, and can be added, removed, and reordered within a section.
+The merchant can add, remove, and reorder up to three benefit blocks. Each block has a title and description. The section also exposes a benefits heading, background color, and quantity visibility setting. Empty benefit values are omitted from the rendered benefit card.
 
-Blocks are made customizable by including a `{% schema %}` in the body. For more information, refer to the [block schema documentation](https://shopify.dev/docs/storefronts/themes/architecture/blocks/theme-blocks/schema).
+## Validation and review
 
-## Schemas
+Run `shopify theme check` from the theme root after theme changes. For visual review, use a Shopify CLI development preview and inspect the homepage, collection, and product pages at desktop and mobile widths. On the product page, check gallery selection and scrolling, variant price/availability changes, quantity behavior, add-to-cart, and the benefit blocks. On collection and homepage cards, verify links, prices, and any catalog-provided swatches.
 
-When developing components defined by schema settings, we recommend these guidelines to simplify your code:
-
-- **Single property settings**: For settings that correspond to a single CSS property, use CSS variables:
-
-  ```liquid
-  <div class="collection" style="--gap: {{ block.settings.gap }}px">
-    ...
-  </div>
-
-  {% stylesheet %}
-    .collection {
-      gap: var(--gap);
-    }
-  {% endstylesheet %}
-
-  {% schema %}
-  {
-    "settings": [{
-      "type": "range",
-      "label": "gap",
-      "id": "gap",
-      "min": 0,
-      "max": 100,
-      "unit": "px",
-      "default": 0,
-    }]
-  }
-  {% endschema %}
-  ```
-
-- **Multiple property settings**: For settings that control multiple CSS properties, use CSS classes:
-
-  ```liquid
-  <div class="collection {{ block.settings.layout }}">
-    ...
-  </div>
-
-  {% stylesheet %}
-    .collection--full-width {
-      /* multiple styles */
-    }
-    .collection--narrow {
-      /* multiple styles */
-    }
-  {% endstylesheet %}
-
-  {% schema %}
-  {
-    "settings": [{
-      "type": "select",
-      "id": "layout",
-      "label": "layout",
-      "values": [
-        { "value": "collection--full-width", "label": "t:options.full" },
-        { "value": "collection--narrow", "label": "t:options.narrow" }
-      ]
-    }]
-  }
-  {% endschema %}
-  ```
-
-## CSS & JavaScript
-
-For CSS and JavaScript, we recommend using the [`{% stylesheet %}`](https://shopify.dev/docs/api/liquid/tags#stylesheet) and [`{% javascript %}`](https://shopify.dev/docs/api/liquid/tags/javascript) tags. They can be included multiple times, but the code will only appear once.
-
-### `critical.css`
-
-The Skeleton Theme explicitly separates essential CSS necessary for every page into a dedicated `critical.css` file.
-
-## Contributing
-
-We're excited for your contributions to the Skeleton Theme! This repository aims to remain as lean, lightweight, and fundamental as possible, and we kindly ask your contributions to align with this intention.
-
-Visit our [CONTRIBUTING.md](./CONTRIBUTING.md) for a detailed overview of our process, guidelines, and recommendations.
-
-## License
-
-Skeleton Theme is open-sourced under the [MIT](./LICENSE.md) License.
+This repository does not include a test suite or a project-configured Shopify store/theme target. A live storefront preview requires Shopify authentication and a selected store; create a development preview only when that external store interaction is authorized.
