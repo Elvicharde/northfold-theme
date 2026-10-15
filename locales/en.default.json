@@ -62,6 +62,8 @@
     "product": {
       "add_to_cart": "Add to cart",
       "gallery": "Product images",
+      "previous_images": "Show previous product images",
+      "next_images": "Show next product images",
       "view_image": "View image {{ index }}: {{ alt }}",
       "options_error": "Unable to update options. Refresh the page and try again.",
       "price": "Price",
