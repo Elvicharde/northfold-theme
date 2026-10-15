@@ -1667,3 +1667,84 @@ At the end of each approved stage, report:
 - Remaining limitations or work.
 
 Avoid large code dumps unless the user explicitly requests them.
+
+## Northfold feature: AJAX cart and free-shipping progress
+
+### Feature objective
+
+Implement AJAX add-to-cart and a configurable free-shipping progress indicator on the existing Northfold product page. Preserve the current Northfold visual identity, product layout, gallery, option selectors, quantity control, benefits section, and Shopify-native product data.
+
+Use the UX Pilot design produced from the original product-page screenshot as a visual reference when it becomes available. Do not block functional implementation while waiting for the design. Do not invent or assume that a design file is present; inspect the repository and ask for the reference if needed.
+
+### Scope and source of truth
+
+- Shopify's product object, selected variant, and cart remain authoritative.
+- Use Shopify's Ajax Cart API for asynchronous cart additions.
+- Build every Cart API URL from `window.Shopify.routes.root`; do not hardcode `/cart/...` paths or assume the storefront has no locale prefix.
+- Preserve the existing product form and variant-selection behaviour. Submit the currently selected variant ID and quantity.
+- Do not introduce a custom cart, localStorage cart persistence, mock.shop requests, frameworks, dependencies, or unrelated refactors.
+- Do not reload the page after a successful cart addition.
+- Keep changes small, reviewable, and limited to the currently approved stage.
+
+### Global free-shipping configuration
+
+- Add the free-shipping threshold as a global theme setting in `config/settings_schema.json`, not as a product-section setting.
+- Give the setting a merchant-friendly label, description, appropriate validation bounds, and a sensible default of 60 in the store's currency.
+- Read the configured setting in Liquid and expose only the required value to the frontend.
+- Keep monetary comparisons consistent with Shopify's cart API representation and the store's currency. Verify the API's monetary units and account for currencies that do not use two decimal places; do not assume that multiplying every threshold by 100 is universally correct.
+- Format displayed amounts using Shopify's money-formatting conventions. Do not hardcode a dollar sign or currency.
+- Handle a zero or invalid threshold safely and avoid division by zero.
+
+### AJAX add-to-cart
+
+- Intercept the existing product form submission without breaking normal form semantics.
+- Send the selected variant ID and quantity to the locale-aware `cart/add.js` endpoint.
+- Inspect the HTTP response and parse the response body safely. A failed request must not be treated as successful merely because a response was received.
+- Surface useful Shopify error details to the caller and preserve the failure reason.
+- Prevent duplicate submissions while a request is pending and restore the form's usable state afterward.
+- During the first cart-integration stage, console logging is acceptable for verifying successful responses and errors. Do not implement the full feedback UI prematurely.
+- After the request is verified, obtain authoritative cart state through the locale-aware Cart API when needed. Do not infer cart totals or counts from the submitted quantity alone.
+
+### Cart state and user feedback
+
+- Update the header cart count from Shopify's authoritative `cart.item_count`.
+- Use a lightweight, theme-native toast component for transient add-to-cart success and error feedback. Do not add a dependency solely for toasts.
+- Keep free-shipping progress persistent in the product purchase area; do not make it dependent on the toast's lifetime.
+- Make toast messages accessible to assistive technology, provide a dismiss control, and use sensible dismissal timing. Errors must remain readable long enough to understand.
+- Use meaningful server error messages where available. Provide a safe fallback message for network errors or unparseable responses.
+- Never announce success or update the cart count as though an addition succeeded when the request failed.
+
+### Free-shipping progress
+
+- Render the initial progress state server-side in Liquid from `cart.total_price` and the configured global threshold.
+- Update the displayed progress after every successful cart addition without a full-page reload.
+- Calculate remaining amount as the greater of zero and threshold minus cart total.
+- Calculate percentage as cart total divided by threshold, capped between zero and 100 percent.
+- Below the threshold, show the remaining amount and a partially filled visual progress indicator.
+- At or above the threshold, show a free-shipping-reached message and a full progress indicator. Do not show a negative remaining amount.
+- Use a semantic, labelled progress element or an equivalent accessible progress pattern with meaningful minimum, maximum, and current values.
+- Make state changes understandable without colour alone. Use a polite live region for relevant message updates without repeatedly announcing unnecessary changes.
+- Keep the indicator responsive and visually consistent with the existing product page.
+
+### Shopify conventions and accessibility
+
+- Follow the installed Shopify guidance for Liquid, schema, LiquidDoc, localization, accessibility, JavaScript, and CSS.
+- Add or reuse locale strings according to existing theme conventions; do not scatter unnecessary hardcoded storefront messages.
+- Keep JavaScript scoped to the relevant theme section or component and compatible with Shopify's rendering lifecycle.
+- Avoid unsafe HTML insertion of API error messages.
+- Preserve existing product options, variant selection, availability, price updates, quantity behaviour, and native form semantics.
+
+### Required staged workflow
+
+Implement only the stage explicitly requested in the current Codex prompt.
+
+1. Inspect the current code and report a plan before editing.
+2. Implement global threshold configuration and AJAX cart interception with console-based verification.
+3. Implement authoritative cart-state updates, header count, and accessible toast feedback.
+4. Implement Liquid-rendered initial free-shipping progress and live updates.
+5. Stop for manual review and fix only issues identified by the user.
+6. Consider stretch goals separately and only after explicit approval.
+
+At each stage, inspect the diff and run relevant available checks. Report actual results; do not claim tests passed unless they were run.
+
+Never commit, push to GitHub, run `shopify theme push`, publish, or modify the live theme unless the user explicitly authorizes that action.
