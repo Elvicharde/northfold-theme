@@ -1,6 +1,13 @@
 {% assign current_variant = product.selected_or_first_available_variant %}
 {% assign product_form_id = 'NorthfoldProductForm-' | append: section.id %}
 {% assign gallery_hero_image = product.featured_image | default: product.images.first %}
+{% assign shipping_threshold = settings.free_shipping_threshold | default: 0 | plus: 0 %}
+{% assign shipping_cart_total = cart.total_price | default: 0 | plus: 0 %}
+{% if shipping_threshold > 0 %}
+  {% assign shipping_remaining = shipping_threshold | minus: shipping_cart_total | at_least: 0 %}
+  {% assign shipping_remaining_formatted = shipping_remaining | money %}
+  {% assign shipping_progress = shipping_cart_total | times: 100.0 | divided_by: shipping_threshold | at_most: 100 | at_least: 0 %}
+{% endif %}
 
 <section
   class="northfold-product full-width"
@@ -140,6 +147,37 @@
           </button>
         </div>
       {% endform %}
+
+      {% if shipping_threshold > 0 %}
+        <div
+          class="northfold-product__shipping-progress"
+          data-northfold-shipping-progress
+          data-threshold="{{ shipping_threshold }}"
+          data-currency="{{ shop.currency }}"
+          data-remaining-template="{{ 'sections.northfold_product.shipping_progress.remaining' | t: amount: '__AMOUNT__' | escape }}"
+          data-unlocked-message="{{ 'sections.northfold_product.shipping_progress.unlocked' | t | escape }}"
+          {% if cart.currency != shop.currency %}hidden{% endif %}
+        >
+          <p class="northfold-product__shipping-message" data-shipping-message role="status" aria-live="polite" aria-atomic="true">
+            {% if shipping_cart_total >= shipping_threshold %}
+              {{ 'sections.northfold_product.shipping_progress.unlocked' | t | escape }}
+            {% else %}
+              {{ 'sections.northfold_product.shipping_progress.remaining' | t: amount: shipping_remaining_formatted | escape }}
+            {% endif %}
+          </p>
+          <progress
+            class="northfold-product__shipping-bar"
+            aria-label="{{ 'sections.northfold_product.shipping_progress.label' | t | escape }}"
+            max="100"
+            value="{{ shipping_progress }}"
+            data-shipping-bar
+          ></progress>
+          <div class="northfold-product__shipping-totals">
+            <span><span>{{ 'sections.northfold_product.shipping_progress.cart_total' | t | escape }}</span> <span data-shipping-total>{{ cart.total_price | money }}</span></span>
+            <span><span>{{ 'sections.northfold_product.shipping_progress.threshold' | t | escape }}</span> <span data-shipping-threshold>{{ shipping_threshold | money }}</span></span>
+          </div>
+        </div>
+      {% endif %}
     </div>
   </div>
 
@@ -365,6 +403,59 @@
     line-height: 1.65;
   }
 
+  .northfold-product__shipping-progress {
+    display: grid;
+    gap: 0.5rem;
+    margin-block-start: 1.5rem;
+  }
+
+  .northfold-product__shipping-progress[hidden] {
+    display: none;
+  }
+
+  .northfold-product__shipping-message {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .northfold-product__shipping-bar {
+    display: block;
+    width: 100%;
+    height: 0.45rem;
+    overflow: hidden;
+    border: 0;
+    border-radius: 999px;
+    background: #e7e2d8;
+    color: #3b402a;
+    accent-color: #3b402a;
+  }
+
+  .northfold-product__shipping-bar::-webkit-progress-bar {
+    border-radius: 999px;
+    background: #e7e2d8;
+  }
+
+  .northfold-product__shipping-bar::-webkit-progress-value {
+    border-radius: 999px;
+    background: #3b402a;
+  }
+
+  .northfold-product__shipping-bar::-moz-progress-bar {
+    border-radius: 999px;
+    background: #3b402a;
+  }
+
+  .northfold-product__shipping-totals {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.25rem 1rem;
+    color: #55564c;
+    font-size: 0.75rem;
+    text-align: right;
+  }
+
   .northfold-product__option {
     min-width: 0;
     margin: 0 0 1.25rem;
@@ -546,6 +637,45 @@
   (() => {
     const pendingRequests = new Map();
     const pendingCartSections = new Set();
+
+    document.addEventListener('northfold:cart-state-updated', (event) => {
+      const freshCart = event.detail?.cart;
+      if (!Number.isSafeInteger(freshCart?.total_price) || freshCart.total_price < 0) return;
+      if (typeof freshCart.currency !== 'string') return;
+
+      document.querySelectorAll('[data-northfold-shipping-progress]').forEach((progressElement) => {
+        const threshold = Number(progressElement.dataset.threshold);
+        if (!Number.isSafeInteger(threshold) || threshold <= 0 || freshCart.currency !== progressElement.dataset.currency) {
+          progressElement.hidden = true;
+          return;
+        }
+
+        const formatter = new Intl.NumberFormat(document.documentElement.lang || undefined, {
+          style: 'currency',
+          currency: freshCart.currency
+        });
+        const subunitsPerUnit = 10 ** formatter.resolvedOptions().maximumFractionDigits;
+        const remaining = Math.max(0, threshold - freshCart.total_price);
+        const percentage = Math.max(0, Math.min(100, freshCart.total_price / threshold * 100));
+        const message = progressElement.querySelector('[data-shipping-message]');
+        const bar = progressElement.querySelector('[data-shipping-bar]');
+        const total = progressElement.querySelector('[data-shipping-total]');
+        const thresholdValue = progressElement.querySelector('[data-shipping-threshold]');
+
+        if (freshCart.total_price >= threshold) {
+          message.textContent = progressElement.dataset.unlockedMessage;
+        } else {
+          const remainingAmount = formatter.format(remaining / subunitsPerUnit);
+          message.textContent = progressElement.dataset.remainingTemplate.replace('__AMOUNT__', remainingAmount);
+        }
+
+        bar.value = percentage;
+        bar.setAttribute('aria-valuenow', String(percentage));
+        total.textContent = formatter.format(freshCart.total_price / subunitsPerUnit);
+        thresholdValue.textContent = formatter.format(threshold / subunitsPerUnit);
+        progressElement.hidden = false;
+      });
+    });
 
     // 1. Delegated submit listener for AJAX Add to Cart
     document.addEventListener('submit', async (event) => {

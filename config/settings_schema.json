@@ -79,5 +79,17 @@
         "default": 4
       }
     ]
+  },
+  {
+    "name": "t:general.settings",
+    "settings": [
+      {
+        "type": "number",
+        "id": "free_shipping_threshold",
+        "default": 0,
+        "label": "t:settings.free_shipping_threshold",
+        "info": "t:settings.free_shipping_threshold_info"
+      }
+    ]
   }
 ]

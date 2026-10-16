@@ -74,6 +74,15 @@
     }
   },
   "sections": {
+    "northfold_product": {
+      "shipping_progress": {
+        "label": "Free-shipping progress",
+        "remaining": "You're {{ amount }} away from free shipping.",
+        "unlocked": "You've unlocked free shipping!",
+        "cart_total": "Cart total",
+        "threshold": "Free-shipping threshold"
+      }
+    },
     "northfold_home": {
       "eyebrow": "Timeless stoneware",
       "title": "Everyday pieces for a warmer home",
