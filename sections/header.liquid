@@ -1,5 +1,36 @@
 <div class="northfold-header full-width">
-  <div class="northfold-header__announcement" role="note">
+  {% assign promotional_announcement_message = section.settings.promotional_announcement_message | strip %}
+  {% if section.settings.enable_promotional_announcement and promotional_announcement_message != blank %}
+    <div
+      class="northfold-header__announcement northfold-header__announcement--promotion"
+      data-northfold-promotion
+      data-storage-key="northfold:announcement-dismissed:{{ shop.permanent_domain | escape }}"
+      role="note"
+      style="--announcement-background: {{ section.settings.promotional_announcement_background }}; --announcement-color: {{ section.settings.promotional_announcement_text_color }};"
+      hidden
+    >
+      <div class="northfold-header__promotion-inner">
+        <div class="northfold-header__promotion-content">
+          <p>{{ promotional_announcement_message | escape }}</p>
+          {% if section.settings.promotional_announcement_link != blank %}
+            {% if section.settings.promotional_announcement_link_text != blank %}
+              <a href="{{ section.settings.promotional_announcement_link | escape }}">{{ section.settings.promotional_announcement_link_text | escape }}</a>
+            {% endif %}
+          {% endif %}
+        </div>
+        <button
+          class="northfold-header__announcement-dismiss"
+          type="button"
+          data-northfold-promotion-dismiss
+          aria-label="{{ 'sections.northfold_header.dismiss_announcement' | t | escape }}"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="northfold-header__announcement northfold-header__announcement--original" data-northfold-original-announcement role="note">
     <div class="northfold-header__announcement-inner">
       <p>{{ section.settings.announcement_primary | escape }}</p>
       <p class="northfold-header__announcement-secondary">{{ section.settings.announcement_secondary | escape }}</p>
@@ -147,6 +178,68 @@
     color: #fff;
     font-size: 0.72rem;
     letter-spacing: 0.025em;
+  }
+
+  .northfold-header__announcement[hidden] {
+    display: none;
+  }
+
+  .northfold-header__announcement--promotion {
+    background: var(--announcement-background);
+    color: var(--announcement-color);
+  }
+
+  .northfold-header__promotion-inner {
+    position: relative;
+    display: flex;
+    min-height: 2.25rem;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    width: var(--content-width);
+    margin-inline: auto;
+    padding-inline: 3.25rem;
+  }
+
+  .northfold-header__promotion-content {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    text-align: center;
+  }
+
+  .northfold-header__promotion-content p {
+    margin: 0;
+  }
+
+  .northfold-header__promotion-content a {
+    color: inherit;
+    text-underline-offset: 0.2em;
+    white-space: nowrap;
+  }
+
+  .northfold-header__announcement-dismiss {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    display: grid;
+    width: 2.75rem;
+    min-height: 2.75rem;
+    place-items: center;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 1.25rem;
+    cursor: pointer;
+  }
+
+  .northfold-header__announcement-dismiss:focus-visible,
+  .northfold-header__promotion-content a:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 2px;
   }
 
   .northfold-header__announcement-inner {
@@ -551,15 +644,28 @@
   }
 
   @media (max-width: 749px) {
+    .northfold-header__promotion-inner {
+      min-height: 4.5rem;
+      padding: 0.75rem 3.5rem;
+    }
+
+    .northfold-header__promotion-content {
+      flex-direction: column;
+      gap: 0.2rem;
+      font-size: 0.85rem;
+    }
+
     .northfold-header__announcement-inner {
-      min-height: 2rem;
+      min-height: 3.5rem;
+      flex-direction: column;
       justify-content: center;
-      padding-inline: 1rem;
+      gap: 0.2rem;
+      padding: 0.65rem 1rem;
       text-align: center;
     }
 
-    .northfold-header__announcement-secondary {
-      display: none;
+    .northfold-header__announcement-inner p {
+      margin: 0;
     }
 
     .northfold-cart-drawer__panel {
@@ -589,6 +695,35 @@
 
 {% javascript %}
   (() => {
+    document.querySelectorAll('[data-northfold-promotion]').forEach((promotion) => {
+      const header = promotion.closest('.northfold-header');
+      const originalAnnouncement = header?.querySelector('[data-northfold-original-announcement]');
+      const dismissButton = promotion.querySelector('[data-northfold-promotion-dismiss]');
+      const storageKey = promotion.dataset.storageKey;
+      if (!originalAnnouncement || !dismissButton || !storageKey) return;
+
+      let dismissed = false;
+      try {
+        dismissed = window.sessionStorage.getItem(storageKey) === 'dismissed';
+      } catch {
+        // Storage can be unavailable in private or restricted browsing contexts.
+      }
+
+      promotion.hidden = dismissed;
+      originalAnnouncement.hidden = !dismissed;
+
+      dismissButton.addEventListener('click', () => {
+        try {
+          window.sessionStorage.setItem(storageKey, 'dismissed');
+        } catch {
+          // Dismissal still applies to the current page if storage is unavailable.
+        }
+
+        promotion.hidden = true;
+        originalAnnouncement.hidden = false;
+      });
+    });
+
     if (window.northfoldHeaderCartInitialized) return;
 
     const drawer = document.querySelector('[data-northfold-cart-drawer]');
@@ -778,6 +913,41 @@
       "id": "announcement_secondary",
       "label": "t:sections.northfold_header.settings.announcement_secondary.label",
       "default": "Designed for a slower, more intentional home"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_promotional_announcement",
+      "label": "Enable promotional announcement",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "promotional_announcement_message",
+      "label": "Promotional message",
+      "default": "Free shipping on orders over $60"
+    },
+    {
+      "type": "url",
+      "id": "promotional_announcement_link",
+      "label": "Promotional link"
+    },
+    {
+      "type": "text",
+      "id": "promotional_announcement_link_text",
+      "label": "Promotional link text",
+      "default": "Shop now →"
+    },
+    {
+      "type": "color",
+      "id": "promotional_announcement_background",
+      "label": "Promotional background colour",
+      "default": "#3B402A"
+    },
+    {
+      "type": "color",
+      "id": "promotional_announcement_text_color",
+      "label": "Promotional text colour",
+      "default": "#FAF8F3"
     },
     {
       "type": "link_list",
