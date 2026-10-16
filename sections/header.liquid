@@ -630,7 +630,7 @@
       return element;
     };
 
-    const renderCart = (cart) => {
+    const renderCart = (cart, openDrawer = true) => {
       if (!Array.isArray(cart?.items) || !Number.isSafeInteger(cart.total_price) || cart.total_price < 0) return false;
       if (!Number.isInteger(cart.item_count) || cart.item_count < 0 || typeof cart.currency !== 'string') return false;
 
@@ -711,7 +711,7 @@
       emptyState.hidden = cart.items.length > 0;
       itemsList.hidden = cart.items.length === 0;
 
-      if (!drawer.open) {
+      if (openDrawer && !drawer.open) {
         if (!drawerOpener && document.activeElement instanceof HTMLElement) {
           drawerOpener = document.activeElement;
         }
@@ -758,7 +758,7 @@
         cartLink.setAttribute('aria-label', cartLink.dataset.cartLabelTemplate.replace('__COUNT__', itemCount));
       });
 
-      renderCart(cart);
+      renderCart(cart, event.detail?.source !== 'initial');
     });
   })();
 {% endjavascript %}

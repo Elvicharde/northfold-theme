@@ -630,6 +630,31 @@
     display: none;
   }
 
+  .northfold-product__status[data-state='error'] {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-error, #7f1d1d);
+    background: var(--color-error-background, #fef2f2);
+    color: var(--color-error, #7f1d1d);
+    font-weight: 600;
+  }
+
+  .northfold-product__status[data-state='error']::before {
+    display: inline-grid;
+    width: 1.25rem;
+    height: 1.25rem;
+    flex: 0 0 1.25rem;
+    place-items: center;
+    border: 1px solid currentcolor;
+    border-radius: 50%;
+    content: '!';
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
   .northfold-product__submit {
     flex: 1 1 12rem;
     min-width: 0;
@@ -749,11 +774,16 @@
   (() => {
     const pendingRequests = new Map();
     const pendingCartSections = new Set();
+    let cartStateVersion = 0;
 
     document.addEventListener('northfold:cart-state-updated', (event) => {
       const freshCart = event.detail?.cart;
       if (!Number.isSafeInteger(freshCart?.total_price) || freshCart.total_price < 0) return;
+      if (!Number.isSafeInteger(freshCart?.item_count) || freshCart.item_count < 0) return;
       if (typeof freshCart.currency !== 'string') return;
+
+      cartStateVersion += 1;
+      const cartTotal = freshCart.item_count > 0 ? freshCart.total_price : 0;
 
       document.querySelectorAll('[data-northfold-shipping-progress]').forEach((progressElement) => {
         const threshold = Number(progressElement.dataset.threshold);
@@ -767,15 +797,15 @@
           currency: freshCart.currency
         });
         const subunitsPerUnit = 10 ** formatter.resolvedOptions().maximumFractionDigits;
-        const remaining = Math.max(0, threshold - freshCart.total_price);
-        const percentage = Math.max(0, Math.min(100, freshCart.total_price / threshold * 100));
+        const remaining = Math.max(0, threshold - cartTotal);
+        const percentage = Math.max(0, Math.min(100, cartTotal / threshold * 100));
         const message = progressElement.querySelector('[data-shipping-message]');
         const bar = progressElement.querySelector('[data-shipping-bar]');
         const total = progressElement.querySelector('[data-shipping-total]');
         const thresholdValue = progressElement.querySelector('[data-shipping-threshold]');
         const supportingMessage = progressElement.querySelector('[data-shipping-supporting]');
 
-        if (freshCart.total_price >= threshold) {
+        if (cartTotal >= threshold) {
           message.textContent = progressElement.dataset.unlockedMessage;
           supportingMessage.hidden = false;
         } else {
@@ -786,11 +816,40 @@
 
         bar.value = percentage;
         bar.setAttribute('aria-valuenow', String(percentage));
-        total.textContent = formatter.format(freshCart.total_price / subunitsPerUnit);
+        total.textContent = formatter.format(cartTotal / subunitsPerUnit);
         thresholdValue.textContent = formatter.format(threshold / subunitsPerUnit);
         progressElement.hidden = false;
       });
     });
+
+    const refreshInitialCartState = async () => {
+      const requestVersion = cartStateVersion;
+
+      try {
+        const rootUrl = window.Shopify?.routes?.root || '/';
+        const cartEndpoint = `${rootUrl.replace(/\/+$/, '')}/cart.js?_=${Date.now()}`;
+        const cartResponse = await window.fetch(cartEndpoint, {
+          headers: { 'Accept': 'application/json' },
+          cache: 'no-store'
+        });
+
+        if (!cartResponse.ok) throw new Error('Unable to load initial cart state');
+
+        const freshCart = await cartResponse.json();
+        if (!Number.isSafeInteger(freshCart?.item_count) || freshCart.item_count < 0) return;
+        if (!Number.isSafeInteger(freshCart?.total_price) || freshCart.total_price < 0) return;
+        if (typeof freshCart.currency !== 'string') return;
+        if (requestVersion !== cartStateVersion) return;
+
+        document.dispatchEvent(new CustomEvent('northfold:cart-state-updated', {
+          detail: { cart: freshCart, source: 'initial' }
+        }));
+      } catch (error) {
+        console.error('Northfold initial cart refresh error:', error);
+      }
+    };
+
+    refreshInitialCartState();
 
     // 1. Delegated submit listener for AJAX Add to Cart
     document.addEventListener('submit', async (event) => {
@@ -823,7 +882,12 @@
       pendingCartSections.add(sectionId);
       form.setAttribute('aria-busy', 'true');
       if (submitButton) submitButton.disabled = true;
-      if (statusElement) statusElement.textContent = '';
+      if (statusElement) {
+        statusElement.textContent = '';
+        statusElement.removeAttribute('data-state');
+        statusElement.setAttribute('role', 'status');
+        statusElement.setAttribute('aria-live', 'polite');
+      }
 
       try {
         const rootUrl = window.Shopify?.routes?.root || '/';
@@ -884,6 +948,9 @@
       } catch (error) {
         console.error('Northfold AJAX cart error:', error);
         if (statusElement) {
+          statusElement.dataset.state = 'error';
+          statusElement.setAttribute('role', 'alert');
+          statusElement.setAttribute('aria-live', 'assertive');
           statusElement.textContent = error.message;
         }
       } finally {
