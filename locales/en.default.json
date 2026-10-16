@@ -79,6 +79,7 @@
         "label": "Free-shipping progress",
         "remaining": "You're {{ amount }} away from free shipping.",
         "unlocked": "You've unlocked free shipping!",
+        "supporting": "Your order qualifies for free shipping.",
         "cart_total": "Cart total",
         "threshold": "Free-shipping threshold"
       }

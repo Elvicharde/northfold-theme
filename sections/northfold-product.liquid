@@ -165,17 +165,30 @@
           data-northfold-shipping-progress
           data-threshold="{{ shipping_threshold }}"
           data-currency="{{ shop.currency }}"
-          data-remaining-template="{{ 'sections.northfold_product.shipping_progress.remaining' | t: amount: '__AMOUNT__' | escape }}"
-          data-unlocked-message="{{ 'sections.northfold_product.shipping_progress.unlocked' | t | escape }}"
+          data-remaining-template="{{ 'sections.northfold_product.shipping_progress.remaining' | t: amount: '__AMOUNT__' | escape_once }}"
+          data-unlocked-message="{{ 'sections.northfold_product.shipping_progress.unlocked' | t | escape_once }}"
           {% if cart.currency != shop.currency %}hidden{% endif %}
         >
-          <p class="northfold-product__shipping-message" data-shipping-message role="status" aria-live="polite" aria-atomic="true">
-            {% if shipping_cart_total >= shipping_threshold %}
-              {{ 'sections.northfold_product.shipping_progress.unlocked' | t | escape }}
-            {% else %}
-              {{ 'sections.northfold_product.shipping_progress.remaining' | t: amount: shipping_remaining_formatted | escape }}
-            {% endif %}
-          </p>
+          <div class="northfold-product__shipping-summary">
+            <svg class="northfold-product__shipping-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M2.5 6.5h12v11h-12zM14.5 10h4l3 3.5v4h-7zM6.5 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM18.5 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+            </svg>
+            <div class="northfold-product__shipping-copy">
+              <p class="northfold-product__shipping-message" data-shipping-message role="status" aria-live="polite" aria-atomic="true">
+                {% if shipping_cart_total >= shipping_threshold %}
+                  {{ 'sections.northfold_product.shipping_progress.unlocked' | t | escape_once }}
+                {% else %}
+                  {{ 'sections.northfold_product.shipping_progress.remaining' | t: amount: shipping_remaining_formatted | escape_once }}
+                {% endif %}
+              </p>
+              <p class="northfold-product__shipping-supporting" data-shipping-supporting{% unless shipping_cart_total >= shipping_threshold %} hidden{% endunless %}>{{ 'sections.northfold_product.shipping_progress.supporting' | t | escape_once }}</p>
+            </div>
+            <div class="northfold-product__shipping-totals">
+              <span><span class="northfold-product__shipping-visually-hidden">{{ 'sections.northfold_product.shipping_progress.cart_total' | t | escape }}</span><span data-shipping-total>{{ cart.total_price | money }}</span></span>
+              <span aria-hidden="true">/</span>
+              <span><span class="northfold-product__shipping-visually-hidden">{{ 'sections.northfold_product.shipping_progress.threshold' | t | escape }}</span><span data-shipping-threshold>{{ shipping_threshold | money }}</span></span>
+            </div>
+          </div>
           <progress
             class="northfold-product__shipping-bar"
             aria-label="{{ 'sections.northfold_product.shipping_progress.label' | t | escape }}"
@@ -183,10 +196,6 @@
             value="{{ shipping_progress }}"
             data-shipping-bar
           ></progress>
-          <div class="northfold-product__shipping-totals">
-            <span><span>{{ 'sections.northfold_product.shipping_progress.cart_total' | t | escape }}</span> <span data-shipping-total>{{ cart.total_price | money }}</span></span>
-            <span><span>{{ 'sections.northfold_product.shipping_progress.threshold' | t | escape }}</span> <span data-shipping-threshold>{{ shipping_threshold | money }}</span></span>
-          </div>
         </div>
       {% endif %}
     </div>
@@ -416,18 +425,74 @@
 
   .northfold-product__shipping-progress {
     display: grid;
-    gap: 0.5rem;
+    gap: 0.75rem;
     margin-block-start: 1.5rem;
+    padding: 1rem 1.125rem;
+    border: 1px solid #e7e2d8;
+    border-radius: 0.5rem;
+    background: #f5f3ed;
   }
 
   .northfold-product__shipping-progress[hidden] {
     display: none;
   }
 
+  .northfold-product__shipping-summary {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  .northfold-product__shipping-icon {
+    flex: 0 0 1.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: #3b402a;
+  }
+
+  .northfold-product__shipping-copy {
+    flex: 1 1 auto;
+    min-width: 10rem;
+  }
+
   .northfold-product__shipping-message {
     margin: 0;
     font-size: 0.9rem;
     font-weight: 600;
+  }
+
+  .northfold-product__shipping-supporting {
+    margin: 0.2rem 0 0;
+    color: #55564c;
+    font-size: 0.8rem;
+  }
+
+  .northfold-product__shipping-supporting[hidden] {
+    display: none;
+  }
+
+  .northfold-product__shipping-totals {
+    display: flex;
+    flex: 0 1 auto;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.35rem;
+    color: #55564c;
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .northfold-product__shipping-visually-hidden {
+    position: absolute;
+    overflow: hidden;
+    width: 1px;
+    height: 1px;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    clip-path: inset(50%);
   }
 
   .northfold-product__shipping-bar {
@@ -455,16 +520,6 @@
   .northfold-product__shipping-bar::-moz-progress-bar {
     border-radius: 999px;
     background: #3b402a;
-  }
-
-  .northfold-product__shipping-totals {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: 0.25rem 1rem;
-    color: #55564c;
-    font-size: 0.75rem;
-    text-align: right;
   }
 
   .northfold-product__option {
@@ -641,6 +696,23 @@
       flex: initial;
       width: 100%;
     }
+
+    .northfold-product__shipping-progress {
+      padding: 0.875rem;
+    }
+
+    .northfold-product__shipping-summary {
+      flex-wrap: wrap;
+    }
+
+    .northfold-product__shipping-copy {
+      min-width: 0;
+    }
+
+    .northfold-product__shipping-totals {
+      flex: 1 1 100%;
+      margin-inline-start: 2.25rem;
+    }
   }
 {% endstylesheet %}
 
@@ -672,12 +744,15 @@
         const bar = progressElement.querySelector('[data-shipping-bar]');
         const total = progressElement.querySelector('[data-shipping-total]');
         const thresholdValue = progressElement.querySelector('[data-shipping-threshold]');
+        const supportingMessage = progressElement.querySelector('[data-shipping-supporting]');
 
         if (freshCart.total_price >= threshold) {
           message.textContent = progressElement.dataset.unlockedMessage;
+          supportingMessage.hidden = false;
         } else {
           const remainingAmount = formatter.format(remaining / subunitsPerUnit);
           message.textContent = progressElement.dataset.remainingTemplate.replace('__AMOUNT__', remainingAmount);
+          supportingMessage.hidden = true;
         }
 
         bar.value = percentage;
@@ -883,6 +958,16 @@
         const activeImageId = productSection.querySelector('[data-northfold-thumbnail][aria-pressed="true"]')?.dataset.imageId;
         const focusedPosition = optionInput.dataset.optionPosition;
         const focusedValue = optionInput.value;
+        const shippingProgress = productSection.querySelector('[data-northfold-shipping-progress]');
+        const updatedShippingProgress = updatedSection.querySelector('[data-northfold-shipping-progress]');
+        if (shippingProgress) {
+          if (updatedShippingProgress) {
+            updatedShippingProgress.replaceWith(shippingProgress);
+          } else {
+            updatedSection.querySelector('.northfold-product__form')?.after(shippingProgress);
+          }
+        }
+
         productSection.replaceWith(updatedSection);
         initializeThumbnailNavigation(updatedSection.querySelector('[data-northfold-gallery]'));
 
