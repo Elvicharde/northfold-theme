@@ -11,7 +11,12 @@
     >
       <div class="northfold-header__promotion-inner">
         <div class="northfold-header__promotion-content">
-          <p>{{ promotional_announcement_message | escape }}</p>
+          <div class="northfold-header__promotion-message">
+            {% if section.settings.show_promotional_announcement_icon %}
+              {% render 'shipping-truck-icon', css_class: 'northfold-header__promotion-icon' %}
+            {% endif %}
+            <p>{{ promotional_announcement_message | escape }}</p>
+          </div>
           {% if section.settings.promotional_announcement_link != blank %}
             {% if section.settings.promotional_announcement_link_text != blank %}
               <a href="{{ section.settings.promotional_announcement_link | escape }}">{{ section.settings.promotional_announcement_link_text | escape }}</a>
@@ -212,6 +217,19 @@
 
   .northfold-header__promotion-content p {
     margin: 0;
+  }
+
+  .northfold-header__promotion-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+
+  .northfold-header__promotion-icon {
+    flex: 0 0 1.15rem;
+    width: 1.15rem;
+    height: 1.15rem;
   }
 
   .northfold-header__promotion-content a {
@@ -925,6 +943,12 @@
       "id": "promotional_announcement_message",
       "label": "Promotional message",
       "default": "Free shipping on orders over $60"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_promotional_announcement_icon",
+      "label": "Show shipping truck icon",
+      "default": true
     },
     {
       "type": "url",
