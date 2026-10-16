@@ -606,6 +606,25 @@
           throw new Error(data.description || data.message || 'Error adding item to cart');
         }
 
+        try {
+          const rootUrl = window.Shopify?.routes?.root || '/';
+          const cartEndpoint = `${rootUrl.replace(/\/+$/, '')}/cart.js?_=${Date.now()}`;
+          const cartResponse = await window.fetch(cartEndpoint, {
+            headers: { 'Accept': 'application/json' }
+          });
+
+          if (!cartResponse.ok) throw new Error('Unable to refresh cart state');
+
+          const freshCart = await cartResponse.json();
+          if (!Number.isInteger(freshCart?.item_count) || freshCart.item_count < 0) {
+            throw new Error('Cart response has an invalid item count');
+          }
+
+          document.dispatchEvent(new CustomEvent('northfold:cart-state-updated', { detail: { cart: freshCart } }));
+        } catch (cartRefreshError) {
+          console.error('Northfold cart refresh error:', cartRefreshError);
+        }
+
         // Trigger cart drawers or global count indicators
         document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart: data } }));
         document.dispatchEvent(new CustomEvent('cart:refresh'));

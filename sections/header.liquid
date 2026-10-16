@@ -54,9 +54,9 @@
           {{ 'icon-account.svg' | inline_asset_content }}
         </a>
       {% endif %}
-      <a class="northfold-header__icon northfold-header__cart" href="{{ routes.cart_url }}" aria-label="{{ 'sections.northfold_header.cart' | t: count: cart.item_count | escape }}">
+      <a class="northfold-header__icon northfold-header__cart" href="{{ routes.cart_url }}" aria-label="{{ 'sections.northfold_header.cart' | t: count: cart.item_count | escape }}" data-cart-label-template="{{ 'sections.northfold_header.cart' | t: count: '__COUNT__' | escape }}">
         {{ 'icon-cart.svg' | inline_asset_content }}
-        {% if cart.item_count > 0 %}<span class="northfold-header__cart-count">{{ cart.item_count }}</span>{% endif %}
+        <span class="northfold-header__cart-count"{% if cart.item_count == 0 %} hidden{% endif %}>{{ cart.item_count }}</span>
       </a>
     </div>
   </header>
@@ -272,6 +272,26 @@
     }
   }
 {% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('northfold:cart-state-updated', (event) => {
+    const itemCount = event.detail?.cart?.item_count;
+    if (!Number.isInteger(itemCount) || itemCount < 0) return;
+
+    document.querySelectorAll('.northfold-header__cart').forEach((cartLink) => {
+      let badge = cartLink.querySelector('.northfold-header__cart-count');
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'northfold-header__cart-count';
+        cartLink.append(badge);
+      }
+
+      badge.textContent = itemCount;
+      badge.hidden = itemCount === 0;
+      cartLink.setAttribute('aria-label', cartLink.dataset.cartLabelTemplate.replace('__COUNT__', itemCount));
+    });
+  });
+{% endjavascript %}
 
 {% schema %}
 {
