@@ -11,18 +11,20 @@
       hidden
     >
       <div class="northfold-header__promotion-inner">
-        <div class="northfold-header__promotion-content">
-          <div class="northfold-header__promotion-message">
-            {% if promotional_announcement_icon != 'none' %}
-              {% render 'promotional-icon', icon: promotional_announcement_icon, css_class: 'northfold-header__promotion-icon' %}
-            {% endif %}
-            <p>{{ promotional_announcement_message | escape }}</p>
-          </div>
-          {% if section.settings.promotional_announcement_link != blank %}
-            {% if section.settings.promotional_announcement_link_text != blank %}
-              <a href="{{ section.settings.promotional_announcement_link | escape }}">{{ section.settings.promotional_announcement_link_text | escape }}</a>
-            {% endif %}
+        <div class="northfold-header__promotion-group">
+          {% if promotional_announcement_icon != 'none' %}
+            {% render 'promotional-icon', icon: promotional_announcement_icon, css_class: 'northfold-header__promotion-icon' %}
           {% endif %}
+          <div class="northfold-header__promotion-content">
+            <div class="northfold-header__promotion-message">
+              <p>{{ promotional_announcement_message | escape }}</p>
+            </div>
+            {% if section.settings.promotional_announcement_link != blank %}
+              {% if section.settings.promotional_announcement_link_text != blank %}
+                <a href="{{ section.settings.promotional_announcement_link | escape }}">{{ section.settings.promotional_announcement_link_text | escape }}</a>
+              {% endif %}
+            {% endif %}
+          </div>
         </div>
         <button
           class="northfold-header__announcement-dismiss"
@@ -196,15 +198,25 @@
   }
 
   .northfold-header__promotion-inner {
-    position: relative;
-    display: flex;
-    min-height: 2.25rem;
+    display: grid;
+    min-height: 2.75rem;
+    grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem;
     align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    width: var(--content-width);
+    width: 100%;
     margin-inline: auto;
-    padding-inline: 3.25rem;
+    padding: 0.35rem clamp(0.5rem, 2.2vw, 2rem);
+  }
+
+  .northfold-header__promotion-group {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    width: fit-content;
+    min-width: 0;
+    max-width: 100%;
+    align-items: center;
+    justify-self: center;
+    gap: clamp(0.4rem, 1vw, 0.65rem);
   }
 
   .northfold-header__promotion-content {
@@ -212,7 +224,10 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem;
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    gap: 0.25rem clamp(0.5rem, 1.2vw, 0.75rem);
     text-align: center;
   }
 
@@ -222,30 +237,36 @@
 
   .northfold-header__promotion-message {
     display: flex;
+    min-width: 0;
     align-items: center;
     justify-content: center;
     gap: 0.4rem;
   }
 
   .northfold-header__promotion-icon {
-    flex: 0 0 1.15rem;
-    width: 1.15rem;
-    height: 1.15rem;
+    flex: 0 0 clamp(1.1rem, 1.5vw, 1.3rem);
+    width: clamp(1.1rem, 1.5vw, 1.3rem);
+    height: clamp(1.1rem, 1.5vw, 1.3rem);
+  }
+
+  .northfold-header__promotion-message p {
+    min-width: 0;
+    overflow-wrap: break-word;
   }
 
   .northfold-header__promotion-content a {
     color: inherit;
     text-underline-offset: 0.2em;
-    white-space: nowrap;
+    overflow-wrap: break-word;
   }
 
   .northfold-header__announcement-dismiss {
-    position: absolute;
-    inset-block: 0;
-    inset-inline-end: 0;
+    grid-column: 3;
+    grid-row: 1;
     display: grid;
     width: 2.75rem;
-    min-height: 2.75rem;
+    height: 2.75rem;
+    justify-self: end;
     place-items: center;
     border: 0;
     background: transparent;
@@ -663,14 +684,7 @@
   }
 
   @media (max-width: 749px) {
-    .northfold-header__promotion-inner {
-      min-height: 4.5rem;
-      padding: 0.75rem 3.5rem;
-    }
-
     .northfold-header__promotion-content {
-      flex-direction: column;
-      gap: 0.2rem;
       font-size: 0.85rem;
     }
 
