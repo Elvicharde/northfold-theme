@@ -81,12 +81,12 @@
     ]
   },
   {
-    "name": "t:general.settings",
+    "name": "t:general.free_shipping",
     "settings": [
       {
         "type": "number",
         "id": "free_shipping_threshold",
-        "default": 0,
+        "default": 60.00,
         "label": "t:settings.free_shipping_threshold",
         "info": "t:settings.free_shipping_threshold_info"
       }

@@ -23,6 +23,7 @@
     "content": "Content",
     "custom_section": "Custom section",
     "fonts": "Fonts",
+    "free_shipping": "Free Shipping",
     "footer": "Footer",
     "group": "Group",
     "header": "Header",
@@ -43,8 +44,8 @@
     "typography": "Typography"
   },
   "settings": {
-    "free_shipping_threshold": "Free-shipping threshold (smallest store-currency units)",
-    "free_shipping_threshold_info": "Enter the threshold in the store currency's smallest units (for example, 5000 for fifty units in a currency with two decimal places). A value of 0 disables the indicator."
+    "free_shipping_threshold": "Free-shipping threshold",
+    "free_shipping_threshold_info": "Minimum cart amount required to qualify for free shipping. Enter the amount in the store currency; zero disables the indicator."
   },
   "labels": {
     "alignment": "Alignment",

@@ -1,9 +1,20 @@
 {% assign current_variant = product.selected_or_first_available_variant %}
 {% assign product_form_id = 'NorthfoldProductForm-' | append: section.id %}
 {% assign gallery_hero_image = product.featured_image | default: product.images.first %}
-{% assign shipping_threshold = settings.free_shipping_threshold | default: 0 | plus: 0 %}
+{% assign shipping_threshold_amount = settings.free_shipping_threshold | default: 0 | plus: 0 %}
+{% assign shipping_subunits_per_unit = 100 %}
+{% case shop.currency %}
+  {% when 'BIF', 'CLP', 'DJF', 'GNF', 'ISK', 'JPY', 'KMF', 'KRW', 'PYG', 'RWF', 'UGX', 'UYI', 'VND', 'VUV', 'XAF', 'XOF', 'XPF' %}
+    {% assign shipping_subunits_per_unit = 1 %}
+  {% when 'BHD', 'IQD', 'JOD', 'KWD', 'LYD', 'OMR', 'TND' %}
+    {% assign shipping_subunits_per_unit = 1000 %}
+  {% when 'CLF', 'UYW' %}
+    {% assign shipping_subunits_per_unit = 10000 %}
+{% endcase %}
+{% assign shipping_threshold = shipping_threshold_amount | times: shipping_subunits_per_unit %}
+{% assign shipping_threshold_floor = shipping_threshold | floor %}
 {% assign shipping_cart_total = cart.total_price | default: 0 | plus: 0 %}
-{% if shipping_threshold > 0 %}
+{% if shipping_threshold > 0 and shipping_threshold == shipping_threshold_floor %}
   {% assign shipping_remaining = shipping_threshold | minus: shipping_cart_total | at_least: 0 %}
   {% assign shipping_remaining_formatted = shipping_remaining | money %}
   {% assign shipping_progress = shipping_cart_total | times: 100.0 | divided_by: shipping_threshold | at_most: 100 | at_least: 0 %}
@@ -148,7 +159,7 @@
         </div>
       {% endform %}
 
-      {% if shipping_threshold > 0 %}
+      {% if shipping_threshold > 0 and shipping_threshold == shipping_threshold_floor %}
         <div
           class="northfold-product__shipping-progress"
           data-northfold-shipping-progress
