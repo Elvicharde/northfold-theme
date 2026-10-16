@@ -1,5 +1,6 @@
 <div class="northfold-header full-width">
   {% assign promotional_announcement_message = section.settings.promotional_announcement_message | strip %}
+  {% assign promotional_announcement_icon = section.settings.promotional_announcement_icon | default: 'shipping_truck' %}
   {% if section.settings.enable_promotional_announcement and promotional_announcement_message != blank %}
     <div
       class="northfold-header__announcement northfold-header__announcement--promotion"
@@ -12,8 +13,8 @@
       <div class="northfold-header__promotion-inner">
         <div class="northfold-header__promotion-content">
           <div class="northfold-header__promotion-message">
-            {% if section.settings.show_promotional_announcement_icon %}
-              {% render 'shipping-truck-icon', css_class: 'northfold-header__promotion-icon' %}
+            {% if promotional_announcement_icon != 'none' %}
+              {% render 'promotional-icon', icon: promotional_announcement_icon, css_class: 'northfold-header__promotion-icon' %}
             {% endif %}
             <p>{{ promotional_announcement_message | escape }}</p>
           </div>
@@ -945,10 +946,16 @@
       "default": "Free shipping on orders over $60"
     },
     {
-      "type": "checkbox",
-      "id": "show_promotional_announcement_icon",
-      "label": "Show shipping truck icon",
-      "default": true
+      "type": "select",
+      "id": "promotional_announcement_icon",
+      "label": "Promotional icon",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "shipping_truck", "label": "Shipping truck" },
+        { "value": "gift", "label": "Gift" },
+        { "value": "discount_tag", "label": "Discount tag" }
+      ],
+      "default": "shipping_truck"
     },
     {
       "type": "url",
