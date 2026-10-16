@@ -1,0 +1,12 @@
+{% doc %}
+  Renders the Northfold shipping truck icon.
+
+  @param {string} css_class - CSS class applied to the icon.
+
+  @example
+  {% render 'shipping-truck-icon', css_class: 'shipping-icon' %}
+{% enddoc %}
+
+<svg class="{{ css_class | escape }}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+  <path d="M2.5 6.5h12v11h-12zM14.5 10h4l3 3.5v4h-7zM6.5 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM18.5 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+</svg>

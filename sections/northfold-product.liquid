@@ -171,9 +171,7 @@
           {% if cart.currency != shop.currency %}hidden{% endif %}
         >
           <div class="northfold-product__shipping-summary">
-            <svg class="northfold-product__shipping-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M2.5 6.5h12v11h-12zM14.5 10h4l3 3.5v4h-7zM6.5 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM18.5 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-            </svg>
+            {% render 'shipping-truck-icon', css_class: 'northfold-product__shipping-icon' %}
             <div class="northfold-product__shipping-copy">
               <p class="northfold-product__shipping-message" data-shipping-message role="status" aria-live="polite" aria-atomic="true">
                 {% if shipping_cart_total >= shipping_threshold %}

@@ -1,0 +1,23 @@
+{% doc %}
+  Renders an icon for the promotional announcement.
+
+  @param {string} icon - Icon choice: shipping_truck, gift, or discount_tag.
+  @param {string} css_class - CSS class applied to the icon.
+
+  @example
+  {% render 'promotional-icon', icon: 'shipping_truck', css_class: 'announcement-icon' %}
+{% enddoc %}
+
+{% case icon %}
+  {% when 'shipping_truck' %}
+    {% render 'shipping-truck-icon', css_class: css_class %}
+  {% when 'gift' %}
+    <svg class="{{ css_class | escape }}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M3 10h18v11H3zM2 6h20v4H2zM12 6v15M12 6c-5 0-6-5-3-5s3 5 3 5Zm0 0c5 0 6-5 3-5s-3 5-3 5Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+    </svg>
+  {% when 'discount_tag' %}
+    <svg class="{{ css_class | escape }}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M20.5 13.5 13 21l-10-10V3h8l9.5 10.5Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+      <circle cx="7.5" cy="7.5" r="1" fill="currentColor" />
+    </svg>
+{% endcase %}

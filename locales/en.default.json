@@ -121,6 +121,7 @@
       "cart": "Cart, {{ count }} items",
       "cart_drawer_title": "Your cart",
       "cart_drawer_close": "Close cart",
+      "dismiss_announcement": "Dismiss announcement",
       "cart_drawer_empty": "Your cart is empty.",
       "cart_drawer_items": "Cart items",
       "cart_drawer_quantity": "Quantity",
