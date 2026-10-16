@@ -118,7 +118,16 @@
       "open_menu": "Open navigation menu",
       "search": "Search",
       "account": "Account",
-      "cart": "Cart, {{ count }} items"
+      "cart": "Cart, {{ count }} items",
+      "cart_drawer_title": "Your cart",
+      "cart_drawer_close": "Close cart",
+      "cart_drawer_empty": "Your cart is empty.",
+      "cart_drawer_items": "Cart items",
+      "cart_drawer_quantity": "Quantity",
+      "cart_drawer_total": "Total",
+      "cart_drawer_view_cart": "View cart",
+      "cart_drawer_checkout": "Checkout",
+      "cart_drawer_continue_shopping": "Continue shopping"
     }
   },
   "search": {

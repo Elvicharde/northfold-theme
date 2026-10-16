@@ -62,6 +62,80 @@
   </header>
 </div>
 
+<dialog
+  class="northfold-cart-drawer"
+  data-northfold-cart-drawer
+  aria-modal="true"
+  aria-labelledby="NorthfoldCartDrawerTitle"
+>
+  <div class="northfold-cart-drawer__panel">
+    <header class="northfold-cart-drawer__header">
+      <h2 id="NorthfoldCartDrawerTitle">{{ 'sections.northfold_header.cart_drawer_title' | t | escape }}</h2>
+      <button
+        class="northfold-cart-drawer__close"
+        type="button"
+        data-northfold-cart-drawer-close
+        aria-label="{{ 'sections.northfold_header.cart_drawer_close' | t | escape }}"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="m5 5 14 14M19 5 5 19"></path>
+        </svg>
+      </button>
+    </header>
+
+    <div class="northfold-cart-drawer__body">
+      <p class="northfold-cart-drawer__empty" data-northfold-cart-drawer-empty role="status" aria-live="polite"{% if cart.item_count > 0 %} hidden{% endif %}>
+        {{ 'sections.northfold_header.cart_drawer_empty' | t | escape }}
+      </p>
+      <ul
+        class="northfold-cart-drawer__items"
+        data-northfold-cart-drawer-items
+        aria-label="{{ 'sections.northfold_header.cart_drawer_items' | t | escape }}"
+        aria-live="polite"
+        aria-relevant="additions removals text"
+        {% if cart.item_count == 0 %}hidden{% endif %}
+        data-quantity-label="{{ 'sections.northfold_header.cart_drawer_quantity' | t | escape }}"
+      >
+        {% for item in cart.items %}
+          <li class="northfold-cart-drawer__item">
+            <div class="northfold-cart-drawer__image">
+              {% if item.image %}
+                {{ item.image | image_url: width: 120 | image_tag: loading: 'lazy', alt: '' }}
+              {% endif %}
+            </div>
+            <div class="northfold-cart-drawer__item-details">
+              <a class="northfold-cart-drawer__item-title" href="{{ item.url }}">{{ item.product.title | escape }}</a>
+              {% unless item.product.has_only_default_variant %}
+                <p class="northfold-cart-drawer__variant">{{ item.variant.title | escape }}</p>
+              {% endunless %}
+              <p class="northfold-cart-drawer__quantity">{{ 'sections.northfold_header.cart_drawer_quantity' | t | escape }}: {{ item.quantity }}</p>
+            </div>
+            <span class="northfold-cart-drawer__line-price">{{ item.final_line_price | money }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <footer class="northfold-cart-drawer__footer">
+      <div class="northfold-cart-drawer__total">
+        <span>{{ 'sections.northfold_header.cart_drawer_total' | t | escape }}</span>
+        <span data-northfold-cart-drawer-total>{{ cart.total_price | money }}</span>
+      </div>
+      <a class="northfold-cart-drawer__view-cart" href="{{ routes.cart_url }}">
+        {{ 'sections.northfold_header.cart_drawer_view_cart' | t | escape }}
+      </a>
+      <form action="{{ routes.cart_url }}" method="post">
+        <button class="northfold-cart-drawer__checkout" type="submit" name="checkout">
+          {{ 'sections.northfold_header.cart_drawer_checkout' | t | escape }}
+        </button>
+      </form>
+      <button class="northfold-cart-drawer__continue" type="button" data-northfold-cart-drawer-close>
+        {{ 'sections.northfold_header.cart_drawer_continue_shopping' | t | escape }}
+      </button>
+    </footer>
+  </div>
+</dialog>
+
 {% stylesheet %}
   .northfold-header {
     background: #faf8f3;
@@ -183,6 +257,219 @@
     display: none;
   }
 
+  .northfold-cart-drawer {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    background: transparent;
+    color: #292d22;
+  }
+
+  .northfold-cart-drawer:not([open]) {
+    display: none;
+  }
+
+  .northfold-cart-drawer::backdrop {
+    background: rgb(29 31 25 / 42%);
+    animation: northfold-cart-drawer-backdrop-in 180ms ease-out both;
+  }
+
+  .northfold-cart-drawer__panel {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    display: flex;
+    width: min(100%, 29rem);
+    height: 100%;
+    flex-direction: column;
+    background: #faf8f3;
+    box-shadow: -0.75rem 0 2rem rgb(29 31 25 / 12%);
+    animation: northfold-cart-drawer-panel-in 220ms ease-out both;
+  }
+
+  .northfold-cart-drawer__header {
+    display: flex;
+    min-height: 4.5rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border-block-end: 1px solid #e7e2d8;
+  }
+
+  .northfold-cart-drawer__header h2 {
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+
+  .northfold-cart-drawer__close {
+    display: grid;
+    width: 2.75rem;
+    height: 2.75rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid #e7e2d8;
+    border-radius: 50%;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .northfold-cart-drawer__close svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    fill: none;
+    stroke: currentcolor;
+    stroke-linecap: round;
+    stroke-width: 1.6;
+  }
+
+  .northfold-cart-drawer__body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 0 1.5rem;
+  }
+
+  .northfold-cart-drawer__empty {
+    padding-block: 2rem;
+    text-align: center;
+  }
+
+  .northfold-cart-drawer__items {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    padding: 1.25rem 0;
+    list-style: none;
+  }
+
+  .northfold-cart-drawer__items[hidden],
+  .northfold-cart-drawer__empty[hidden] {
+    display: none;
+  }
+
+  .northfold-cart-drawer__item {
+    display: grid;
+    grid-template-columns: 4.25rem minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 0.875rem;
+    padding-block-end: 1rem;
+    border-block-end: 1px solid #e7e2d8;
+  }
+
+  .northfold-cart-drawer__image {
+    width: 4.25rem;
+    aspect-ratio: 1;
+    background: #f0eee7;
+  }
+
+  .northfold-cart-drawer__image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .northfold-cart-drawer__item-details {
+    min-width: 0;
+  }
+
+  .northfold-cart-drawer__item-title {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .northfold-cart-drawer__item-title:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .northfold-cart-drawer__variant,
+  .northfold-cart-drawer__quantity {
+    margin: 0.3rem 0 0;
+    color: #55564c;
+    font-size: 0.85rem;
+  }
+
+  .northfold-cart-drawer__line-price {
+    white-space: nowrap;
+    font-size: 0.9rem;
+  }
+
+  .northfold-cart-drawer__footer {
+    display: grid;
+    gap: 0.75rem;
+    padding: 1.25rem 1.5rem max(1.25rem, env(safe-area-inset-bottom));
+    border-block-start: 1px solid #e7e2d8;
+    background: #faf8f3;
+  }
+
+  .northfold-cart-drawer__total {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-weight: 600;
+  }
+
+  .northfold-cart-drawer__view-cart,
+  .northfold-cart-drawer__checkout,
+  .northfold-cart-drawer__continue {
+    display: grid;
+    min-height: 3rem;
+    width: 100%;
+    place-items: center;
+    padding: 0.75rem 1rem;
+    border: 1px solid #3b402a;
+    color: #3b402a;
+    font: inherit;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .northfold-cart-drawer__view-cart,
+  .northfold-cart-drawer__continue {
+    background: transparent;
+  }
+
+  .northfold-cart-drawer__checkout {
+    background: #3b402a;
+    color: #fff;
+  }
+
+  .northfold-cart-drawer__footer form {
+    margin: 0;
+  }
+
+  .northfold-cart-drawer__close:focus-visible,
+  .northfold-cart-drawer__item-title:focus-visible,
+  .northfold-cart-drawer__view-cart:focus-visible,
+  .northfold-cart-drawer__checkout:focus-visible,
+  .northfold-cart-drawer__continue:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 3px;
+  }
+
+  @keyframes northfold-cart-drawer-panel-in {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+
+  @keyframes northfold-cart-drawer-backdrop-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
   .northfold-header__mobile-menu {
     display: none;
   }
@@ -274,27 +561,206 @@
     .northfold-header__announcement-secondary {
       display: none;
     }
+
+    .northfold-cart-drawer__panel {
+      width: 100%;
+    }
+
+    .northfold-cart-drawer__header {
+      padding-inline: 1.125rem;
+    }
+
+    .northfold-cart-drawer__body {
+      padding-inline: 1.125rem;
+    }
+
+    .northfold-cart-drawer__footer {
+      padding-inline: 1.125rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .northfold-cart-drawer::backdrop,
+    .northfold-cart-drawer__panel {
+      animation: none;
+    }
   }
 {% endstylesheet %}
 
 {% javascript %}
-  document.addEventListener('northfold:cart-state-updated', (event) => {
-    const itemCount = event.detail?.cart?.item_count;
-    if (!Number.isInteger(itemCount) || itemCount < 0) return;
+  (() => {
+    if (window.northfoldHeaderCartInitialized) return;
 
-    document.querySelectorAll('.northfold-header__cart').forEach((cartLink) => {
-      let badge = cartLink.querySelector('.northfold-header__cart-count');
-      if (!badge) {
-        badge = document.createElement('span');
-        badge.className = 'northfold-header__cart-count';
-        cartLink.append(badge);
+    const drawer = document.querySelector('[data-northfold-cart-drawer]');
+    if (!drawer || typeof drawer.showModal !== 'function') return;
+
+    window.northfoldHeaderCartInitialized = true;
+
+    const closeButton = drawer.querySelector('.northfold-cart-drawer__close');
+    const itemsList = drawer.querySelector('[data-northfold-cart-drawer-items]');
+    const emptyState = drawer.querySelector('[data-northfold-cart-drawer-empty]');
+    const totalValue = drawer.querySelector('[data-northfold-cart-drawer-total]');
+    let drawerOpener = null;
+
+    const safeUrl = (value) => {
+      if (typeof value !== 'string' || value.trim() === '') return null;
+
+      try {
+        const url = new URL(value, window.location.origin);
+        return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : null;
+      } catch {
+        return null;
+      }
+    };
+
+    const formatMoney = (amount, currency, locale) => {
+      const formatter = new Intl.NumberFormat(locale || undefined, {
+        style: 'currency',
+        currency
+      });
+      const subunitsPerUnit = 10 ** formatter.resolvedOptions().maximumFractionDigits;
+      return formatter.format(amount / subunitsPerUnit);
+    };
+
+    const appendText = (parent, tagName, className, text) => {
+      const element = document.createElement(tagName);
+      if (className) element.className = className;
+      element.textContent = text;
+      parent.append(element);
+      return element;
+    };
+
+    const renderCart = (cart) => {
+      if (!Array.isArray(cart?.items) || !Number.isSafeInteger(cart.total_price) || cart.total_price < 0) return false;
+      if (!Number.isInteger(cart.item_count) || cart.item_count < 0 || typeof cart.currency !== 'string') return false;
+
+      let formattedTotal;
+      try {
+        formattedTotal = formatMoney(cart.total_price, cart.currency, document.documentElement.lang);
+      } catch {
+        return false;
       }
 
-      badge.textContent = itemCount;
-      badge.hidden = itemCount === 0;
-      cartLink.setAttribute('aria-label', cartLink.dataset.cartLabelTemplate.replace('__COUNT__', itemCount));
+      itemsList.replaceChildren();
+
+      cart.items.forEach((item) => {
+        const row = document.createElement('li');
+        row.className = 'northfold-cart-drawer__item';
+
+        const imageContainer = document.createElement('div');
+        imageContainer.className = 'northfold-cart-drawer__image';
+        const featuredImage = item.featured_image && typeof item.featured_image === 'object'
+          ? item.featured_image
+          : null;
+        const imageSource = safeUrl(featuredImage?.url || item.image);
+        if (imageSource) {
+          const image = document.createElement('img');
+          image.src = imageSource;
+          image.alt = '';
+          image.width = 68;
+          image.height = 68;
+          image.loading = 'lazy';
+          imageContainer.append(image);
+        }
+        row.append(imageContainer);
+
+        const details = document.createElement('div');
+        details.className = 'northfold-cart-drawer__item-details';
+
+        const productTitle = typeof item.product_title === 'string' ? item.product_title : item.title;
+        const productUrl = safeUrl(item.url);
+        if (productUrl) {
+          const titleLink = appendText(details, 'a', 'northfold-cart-drawer__item-title', productTitle || '');
+          titleLink.href = productUrl;
+        } else {
+          appendText(details, 'span', 'northfold-cart-drawer__item-title', productTitle || '');
+        }
+
+        let variantTitle = typeof item.variant_title === 'string' ? item.variant_title : '';
+        if (!variantTitle && Array.isArray(item.options_with_values)) {
+          variantTitle = item.options_with_values
+            .map((option) => typeof option === 'string' ? option : option?.value)
+            .filter((value) => typeof value === 'string' && value !== '')
+            .join(' / ');
+        }
+        if (variantTitle && variantTitle !== 'Default Title' && typeof item.product_title === 'string') {
+          appendText(details, 'p', 'northfold-cart-drawer__variant', variantTitle);
+        }
+
+        const quantityLabel = itemsList.dataset.quantityLabel;
+        appendText(details, 'p', 'northfold-cart-drawer__quantity', `${quantityLabel}: ${item.quantity}`);
+        row.append(details);
+
+        const linePrice = Number.isSafeInteger(item.final_line_price)
+          ? item.final_line_price
+          : item.line_price;
+        const priceElement = document.createElement('span');
+        priceElement.className = 'northfold-cart-drawer__line-price';
+        if (Number.isSafeInteger(linePrice) && linePrice >= 0) {
+          try {
+            priceElement.textContent = formatMoney(linePrice, cart.currency, document.documentElement.lang);
+          } catch {
+            priceElement.textContent = '';
+          }
+        }
+        row.append(priceElement);
+        itemsList.append(row);
+      });
+
+      totalValue.textContent = formattedTotal;
+      emptyState.hidden = cart.items.length > 0;
+      itemsList.hidden = cart.items.length === 0;
+
+      if (!drawer.open) {
+        if (!drawerOpener && document.activeElement instanceof HTMLElement) {
+          drawerOpener = document.activeElement;
+        }
+        drawer.showModal();
+        closeButton.focus({ preventScroll: true });
+      }
+
+      return true;
+    };
+
+    document.addEventListener('submit', (event) => {
+      if (!(event.target instanceof HTMLFormElement) || !event.target.matches('form.northfold-product__form')) return;
+      drawerOpener = event.submitter instanceof HTMLElement ? event.submitter : document.activeElement;
+    }, true);
+
+    drawer.addEventListener('click', (event) => {
+      if (event.target === drawer || event.target.closest('[data-northfold-cart-drawer-close]')) {
+        if (drawer.open) drawer.close();
+      }
     });
-  });
+
+    drawer.addEventListener('close', () => {
+      const fallbackFocus = document.querySelector('.northfold-header__cart');
+      const focusTarget = drawerOpener?.isConnected && !drawerOpener.disabled ? drawerOpener : fallbackFocus;
+      focusTarget?.focus({ preventScroll: true });
+      drawerOpener = null;
+    });
+
+    document.addEventListener('northfold:cart-state-updated', (event) => {
+      const cart = event.detail?.cart;
+      const itemCount = cart?.item_count;
+      if (!Number.isInteger(itemCount) || itemCount < 0) return;
+
+      document.querySelectorAll('.northfold-header__cart').forEach((cartLink) => {
+        let badge = cartLink.querySelector('.northfold-header__cart-count');
+        if (!badge) {
+          badge = document.createElement('span');
+          badge.className = 'northfold-header__cart-count';
+          cartLink.append(badge);
+        }
+
+        badge.textContent = itemCount;
+        badge.hidden = itemCount === 0;
+        cartLink.setAttribute('aria-label', cartLink.dataset.cartLabelTemplate.replace('__COUNT__', itemCount));
+      });
+
+      renderCart(cart);
+    });
+  })();
 {% endjavascript %}
 
 {% schema %}
