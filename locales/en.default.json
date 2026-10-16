@@ -82,6 +82,9 @@
         "supporting": "Your order qualifies for free shipping.",
         "cart_total": "Cart total",
         "threshold": "Free-shipping threshold"
+      },
+      "care_instructions": {
+        "title": "Care instructions"
       }
     },
     "northfold_home": {

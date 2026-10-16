@@ -1,6 +1,7 @@
 {% assign current_variant = product.selected_or_first_available_variant %}
 {% assign product_form_id = 'NorthfoldProductForm-' | append: section.id %}
 {% assign gallery_hero_image = product.featured_image | default: product.images.first %}
+{% assign care_instructions = product.metafields.custom.care_instructions.value %}
 {% assign shipping_threshold_amount = settings.free_shipping_threshold | default: 0 | plus: 0 %}
 {% assign shipping_subunits_per_unit = 100 %}
 {% case shop.currency %}
@@ -197,6 +198,13 @@
             data-shipping-bar
           ></progress>
         </div>
+      {% endif %}
+
+      {% if care_instructions != blank %}
+        <details class="northfold-product__care">
+          <summary>{{ 'sections.northfold_product.care_instructions.title' | t | escape }}</summary>
+          <div class="northfold-product__care-content">{{ care_instructions | escape | newline_to_br }}</div>
+        </details>
       {% endif %}
     </div>
   </div>
@@ -520,6 +528,27 @@
   .northfold-product__shipping-bar::-moz-progress-bar {
     border-radius: 999px;
     background: #3b402a;
+  }
+
+  .northfold-product__care {
+    margin-block-start: 1.25rem;
+    border-block: 1px solid #e7e2d8;
+  }
+
+  .northfold-product__care summary {
+    padding-block: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .northfold-product__care summary:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 3px;
+  }
+
+  .northfold-product__care-content {
+    padding-block: 0 1rem;
+    line-height: 1.6;
   }
 
   .northfold-product__option {
